@@ -5,4 +5,4 @@ Disallow: /swiss.html
 Disallow: /editorial.html
 Disallow: /brutalist.html
 
-Sitemap: https://forma-arch.ua/sitemap.xml
+Sitemap: https://relaxed-elf-2dd8f8.netlify.app/sitemap.xml
