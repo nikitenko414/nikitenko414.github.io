@@ -1,0 +1,20 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(claude --version)",
+      "PowerShell(claude --version)",
+      "PowerShell(node --version)",
+      "Bash(mkdir -p ~/.claude/skills)",
+      "Read(//c/Users/abtse/.claude/**)",
+      "PowerShell(npm --version)",
+      "PowerShell(Test-Path \"C:\\\\Program Files\\\\nodejs\\\\node.exe\"; Test-Path \"$env:APPDATA\\\\npm\\\\node.exe\"; Test-Path \"$env:LOCALAPPDATA\\\\Programs\\\\nodejs\\\\node.exe\"; $env:Path -split ';' | Select-String -Pattern \"node\")",
+      "PowerShell(& \"C:\\\\Program Files\\\\nodejs\\\\node.exe\" --version)",
+      "PowerShell(& \"C:\\\\Program Files\\\\nodejs\\\\npm.cmd\" --version)",
+      "WebFetch(domain:unsplash.com)",
+      "WebFetch(domain:www.pexels.com)",
+      "Bash(\"/c/Program Files/nodejs/npx.cmd\" -y serve -l 8080 .)",
+      "Bash(curl -s -o /dev/null -w \"%{http_code}\\\\n\" http://localhost:8080/premium.html)",
+      "Bash(jobs)"
+    ]
+  }
+}

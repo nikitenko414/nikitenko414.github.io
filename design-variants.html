@@ -1,0 +1,81 @@
+<!doctype html>
+<html lang="uk">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>FORMA — вибір напрямку дизайну</title>
+<meta name="description" content="Порівняння трьох естетичних напрямків для сайту архітектурної студії FORMA.">
+<style>
+  :root {
+    --space-3: 16px;
+    --space-4: 24px;
+    --space-5: 48px;
+    --color-focus: #2563eb;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    font-family: Georgia, serif;
+    background: #f5f4f0;
+    color: #14140f;
+    padding: var(--space-5) var(--space-4);
+  }
+  h1 {
+    font-size: clamp(28px, 4vw, 44px);
+    margin: 0 0 var(--space-3);
+  }
+  p.lead {
+    max-width: 60ch;
+    margin: 0 0 var(--space-5);
+    color: #4a463d;
+  }
+  .grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: var(--space-4);
+    max-width: 1100px;
+  }
+  .card {
+    display: block;
+    border: 1px solid #14140f;
+    padding: var(--space-4);
+    transition: transform 200ms ease;
+  }
+  .card:hover, .card:focus-visible {
+    transform: translateY(-4px);
+    outline: 3px solid var(--color-focus);
+    outline-offset: 3px;
+  }
+  .card h2 {
+    margin: 0 0 8px;
+    font-size: 22px;
+  }
+  .card p {
+    margin: 0;
+    color: #4a463d;
+    font-size: 15px;
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .card { transition: none; }
+  }
+</style>
+</head>
+<body>
+  <h1>FORMA — три варіанти головної сторінки</h1>
+  <p class="lead">Ще не обрано фінальний напрямок дизайну. Порівняйте три естетики (без фото, із заглушками) і оберіть одну для подальшої розробки.</p>
+  <div class="grid">
+    <a class="card" href="swiss.html">
+      <h2>1. Swiss Minimalism</h2>
+      <p>Сувора сітка, багато повітря, грид-заголовки, один акцентний червоний.</p>
+    </a>
+    <a class="card" href="editorial.html">
+      <h2>2. Editorial</h2>
+      <p>Журнальна подача, серифний заголовок, цитати, теплий папір-фон.</p>
+    </a>
+    <a class="card" href="brutalist.html">
+      <h2>3. Dark Brutalist</h2>
+      <p>Чорне тло, кислотний акцент, грубі межі, моноширинний текст.</p>
+    </a>
+  </div>
+</body>
+</html>

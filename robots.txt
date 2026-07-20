@@ -1,0 +1,8 @@
+User-agent: *
+Allow: /
+Disallow: /design-variants.html
+Disallow: /swiss.html
+Disallow: /editorial.html
+Disallow: /brutalist.html
+
+Sitemap: https://forma-arch.ua/sitemap.xml
