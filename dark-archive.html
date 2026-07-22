@@ -14,23 +14,14 @@
 </head>
 <body>
 <a class="logo-fixed" href="design-variants.html">FORMA</a>
-<button type="button" class="menu-toggle" id="menu-open" aria-haspopup="true" aria-expanded="false" aria-controls="menu-overlay">Меню</button>
+<nav class="nav-fixed" aria-label="Головна навігація">
+  <a href="houses.html">Будинки</a>
+  <a href="commercial.html">Комерція</a>
+  <a href="landscape.html">Ландшафт</a>
+  <a href="interior.html">Інтер'єр</a>
+  <a href="blog.html">Блог</a>
+</nav>
 <div class="progress-fixed" aria-hidden="true"><span id="progress-index">01</span> / 07</div>
-
-<div class="menu-overlay" id="menu-overlay" role="dialog" aria-modal="true" aria-label="Головна навігація">
-  <button type="button" class="menu-close" id="menu-close">Закрити ✕</button>
-  <nav class="menu-nav" aria-label="Розділи сайту">
-    <a href="houses.html">Будинки</a>
-    <a href="commercial.html">Комерційні приміщення</a>
-    <a href="landscape.html">Ландшафтний дизайн</a>
-    <a href="interior.html">Інтер'єр</a>
-    <a href="blog.html">Блог</a>
-  </nav>
-  <div class="menu-contact">
-    <a href="mailto:studio@forma-arch.ua">studio@forma-arch.ua</a>
-    <a href="tel:+380440000000">+380 44 000 00 00</a>
-  </div>
-</div>
 
 <main class="slides">
   <section class="slide slide-plain" data-index="01">
@@ -112,6 +103,5 @@
 </main>
 
 <script src="src/scripts/slide-fade.js"></script>
-<script src="src/scripts/menu-overlay.js"></script>
 </body>
 </html>
