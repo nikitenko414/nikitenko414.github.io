@@ -32,7 +32,7 @@ body {
 
 .progress-fixed {
   position: fixed;
-  top: 32px;
+  bottom: 32px;
   right: 32px;
   z-index: 20;
   font-size: 12px;
@@ -44,10 +44,114 @@ body {
   color: var(--color-accent);
 }
 
+.menu-toggle {
+  position: fixed;
+  top: 32px;
+  right: 32px;
+  z-index: 21;
+  font-family: var(--font-body);
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.14em;
+  color: var(--color-text);
+  background: none;
+  border: 1px solid var(--color-line);
+  padding: 10px 18px;
+  transition: border-color 220ms ease, color 220ms ease;
+}
+
+.menu-toggle:hover,
+.menu-toggle:focus-visible {
+  border-color: var(--color-accent);
+  color: var(--color-accent);
+}
+
 @media (max-width: 640px) {
-  .logo-fixed, .progress-fixed { top: 20px; }
+  .logo-fixed, .menu-toggle { top: 20px; }
   .logo-fixed { left: 20px; }
-  .progress-fixed { right: 20px; }
+  .menu-toggle { right: 20px; }
+  .progress-fixed { bottom: 20px; right: 20px; }
+}
+
+/* Menu overlay */
+.menu-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 30;
+  background: var(--color-bg);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 350ms ease;
+}
+
+.menu-overlay.is-open {
+  opacity: 1;
+  visibility: visible;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .menu-overlay { transition: none; }
+}
+
+.menu-close {
+  position: absolute;
+  top: 32px;
+  right: 32px;
+  background: none;
+  border: 1px solid var(--color-line);
+  color: var(--color-text);
+  font-size: 13px;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  padding: 10px 18px;
+  transition: border-color 220ms ease, color 220ms ease;
+}
+
+.menu-close:hover,
+.menu-close:focus-visible {
+  border-color: var(--color-accent);
+  color: var(--color-accent);
+}
+
+@media (max-width: 640px) {
+  .menu-close { top: 20px; right: 20px; }
+}
+
+.menu-nav {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 24px;
+}
+
+.menu-nav a {
+  font-family: var(--font-display);
+  font-size: clamp(30px, 5vw, 52px);
+  font-weight: 400;
+  color: var(--color-text);
+  transition: color 220ms ease;
+}
+
+.menu-nav a:hover,
+.menu-nav a:focus-visible {
+  color: var(--color-accent);
+}
+
+.menu-contact {
+  margin-top: 48px;
+  display: flex;
+  gap: 24px;
+  font-size: 13px;
+  color: var(--color-muted);
+}
+
+.menu-contact a:hover,
+.menu-contact a:focus-visible {
+  color: var(--color-accent);
 }
 
 /* Slides */
