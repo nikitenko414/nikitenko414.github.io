@@ -9,5 +9,6 @@ Disallow: /dark-motion.html
 Disallow: /dark-glass.html
 Disallow: /dark-scrolly.html
 Disallow: /dark-horizontal.html
+Disallow: /dark-archive.html
 
 Sitemap: https://relaxed-elf-2dd8f8.netlify.app/sitemap.xml
