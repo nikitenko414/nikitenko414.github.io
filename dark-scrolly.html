@@ -1,0 +1,93 @@
+<!doctype html>
+<html lang="uk">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>FORMA — Dark Scrollytelling (варіант)</title>
+<meta name="description" content="Тестовий варіант дизайну: текст закріплений при скролі, фото змінюються під час прокрутки.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Newsreader:ital,wght@0,500;1,500&family=Work+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="src/styles/reset.css">
+<link rel="stylesheet" href="src/styles/dark-scrolly.css">
+</head>
+<body>
+<header class="site-header wrap">
+  <a class="logo" href="design-variants.html">FORMA</a>
+  <nav aria-label="Головна навігація">
+    <ul class="nav-list">
+      <li><a href="#process">Процес</a></li>
+      <li><a href="#contact">Контакти</a></li>
+    </ul>
+  </nav>
+</header>
+
+<main id="top">
+  <section class="hero wrap">
+    <p class="eyebrow" data-reveal>FORMA — архітектурна студія</p>
+    <h1 class="hero-title" data-reveal data-reveal-delay="80">Процес, розказаний <em>прокруткою</em></h1>
+    <p class="hero-sub" data-reveal data-reveal-delay="160">Варіант дизайну: гортайте вниз — текст лишається на місці, фото змінюються самі. Класичний прийом "scrollytelling".</p>
+  </section>
+
+  <section class="scrolly" id="process" aria-label="Наш процес роботи">
+    <div class="scrolly-sticky">
+      <div class="wrap scrolly-grid">
+        <div class="scrolly-visual">
+          <img class="scrolly-img is-active" data-step="0" src="https://images.pexels.com/photos/1974596/pexels-photo-1974596.jpeg?auto=compress&cs=tinysrgb&fit=crop&w=1000&h=750" width="1000" height="750" alt="Тимчасове фото: етап дослідження ділянки (заглушка для візуалу, Pexels)" loading="eager">
+          <img class="scrolly-img" data-step="1" src="https://images.pexels.com/photos/15422346/pexels-photo-15422346.jpeg?auto=compress&cs=tinysrgb&fit=crop&w=1000&h=750" width="1000" height="750" alt="Тимчасове фото: етап концепції (заглушка для візуалу, Pexels)" loading="lazy">
+          <img class="scrolly-img" data-step="2" src="https://images.pexels.com/photos/16631149/pexels-photo-16631149.jpeg?auto=compress&cs=tinysrgb&fit=crop&w=1000&h=750" width="1000" height="750" alt="Тимчасове фото: етап проєктування (заглушка для візуалу, Pexels)" loading="lazy">
+        </div>
+        <div class="scrolly-text">
+          <p class="kicker">Як ми працюємо</p>
+          <div class="scrolly-copy is-active" data-step="0">
+            <p class="num">01</p>
+            <h3>Дослідження</h3>
+            <p class="desc">Аналізуємо ділянку, контекст і потреби майбутніх мешканців ще до першого ескізу.</p>
+          </div>
+          <div class="scrolly-copy" data-step="1">
+            <p class="num">02</p>
+            <h3>Концепція</h3>
+            <p class="desc">Формуємо ідею простору: світло, матеріал, форма — у такому порядку, не навпаки.</p>
+          </div>
+          <div class="scrolly-copy" data-step="2">
+            <p class="num">03</p>
+            <h3>Проєктування</h3>
+            <p class="desc">Робочі креслення, BIM-модель, координація з кожним інженерним розділом.</p>
+          </div>
+          <div class="scrolly-progress" aria-hidden="true">
+            <span class="is-active"></span>
+            <span></span>
+            <span></span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer class="site-footer wrap" id="contact">
+  <div class="col">
+    <h4>FORMA</h4>
+    <p>Архітектурна студія<br>Київ, Україна</p>
+  </div>
+  <div class="col">
+    <h4>Контакти</h4>
+    <a href="mailto:studio@forma-arch.ua">studio@forma-arch.ua</a>
+    <a href="tel:+380440000000">+380 44 000 00 00</a>
+  </div>
+  <div class="col">
+    <h4>Соцмережі</h4>
+    <a href="#">Instagram</a>
+    <a href="#">Behance</a>
+  </div>
+  <div class="col">
+    <h4>Варіант дизайну</h4>
+    <p>Dark Scrollytelling — <a href="design-variants.html">усі варіанти</a></p>
+  </div>
+</footer>
+
+<script src="src/scripts/reveal.js"></script>
+<script src="src/scripts/scrolly.js"></script>
+</body>
+</html>
