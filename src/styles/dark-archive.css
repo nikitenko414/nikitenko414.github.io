@@ -146,6 +146,8 @@ body {
 }
 
 .slide-plain .slide-content {
+  position: relative;
+  z-index: 2;
   max-width: 640px;
   padding-inline: 24px;
 }
