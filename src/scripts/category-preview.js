@@ -30,4 +30,11 @@
       preview.classList.remove('is-visible');
     });
   });
+
+  function hide() {
+    preview.classList.remove('is-visible');
+  }
+
+  var slidesEl = document.querySelector('.slides');
+  (slidesEl || window).addEventListener('scroll', hide, { passive: true });
 })();
