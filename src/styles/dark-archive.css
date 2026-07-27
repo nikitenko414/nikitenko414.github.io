@@ -228,6 +228,39 @@ body {
   transform: scaleX(1);
 }
 
+.category-preview {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  z-index: 15;
+  width: 320px;
+  pointer-events: none;
+  opacity: 0;
+  transform: translate(-50%, -50%) scale(0.94);
+  transition: opacity 250ms ease, transform 250ms ease;
+}
+
+.category-preview.is-visible {
+  opacity: 1;
+  transform: translate(-50%, -50%) scale(1);
+}
+
+.category-preview img {
+  width: 100%;
+  aspect-ratio: 4 / 3;
+  object-fit: cover;
+  filter: grayscale(1) contrast(1.2);
+  border: 1px solid var(--color-line);
+}
+
+@media (max-width: 720px) {
+  .category-preview { display: none; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .category-preview { transition: none; }
+}
+
 /* Project slides */
 .slide-media {
   position: absolute;
