@@ -230,14 +230,14 @@ body {
 
 .category-preview {
   position: fixed;
-  top: 50%;
-  left: 50%;
+  top: 0;
+  left: 0;
   z-index: 15;
-  width: 320px;
+  width: 220px;
   pointer-events: none;
   opacity: 0;
-  transform: translate(-50%, -50%) scale(0.94);
-  transition: opacity 250ms ease, transform 250ms ease;
+  transform: translate(-50%, -50%) scale(0.92);
+  transition: opacity 200ms ease, transform 200ms ease;
 }
 
 .category-preview.is-visible {
