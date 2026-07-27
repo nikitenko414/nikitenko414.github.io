@@ -13,7 +13,7 @@
 <meta property="og:image" content="https://images.pexels.com/photos/6430734/pexels-photo-6430734.jpeg">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@0,500;0,600;0,700;1,500&family=Work+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Italiana&family=Work+Sans:wght@400;500;600&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="src/styles/reset.css">
 <link rel="stylesheet" href="src/styles/premium.css">
 <script type="application/ld+json">
@@ -53,7 +53,11 @@
       </div>
     </header>
     <figure class="article-cover">
-      <img src="https://images.pexels.com/photos/6430734/pexels-photo-6430734.jpeg?auto=compress&cs=tinysrgb&fit=crop&w=1600&h=900" width="1600" height="900" alt="Тимчасове фото проєкту «Парк Клевер» (заглушка для візуалу, Pexels)" loading="eager" fetchpriority="high">
+      <picture>
+      <source type="image/avif" srcset="src/images/photos/6430734-640.avif 640w, src/images/photos/6430734-1280.avif 1280w, src/images/photos/6430734-1920.avif 1920w" sizes="100vw">
+      <source type="image/webp" srcset="src/images/photos/6430734-640.webp 640w, src/images/photos/6430734-1280.webp 1280w, src/images/photos/6430734-1920.webp 1920w" sizes="100vw">
+      <img src="src/images/photos/6430734-1280.jpg" srcset="src/images/photos/6430734-640.jpg 640w, src/images/photos/6430734-1280.jpg 1280w, src/images/photos/6430734-1920.jpg 1920w" sizes="100vw" width="1600" height="900" alt="Тимчасове фото проєкту «Парк Клевер» (заглушка для візуалу, Pexels)" loading="eager" fetchpriority="high">
+    </picture>
     </figure>
     <div class="article-body">
       <p>Замовник хотів парк, а не терасовану ділянку з підпірними стінками. Ми зберегли природний перепад рельєфу майже без змін, проклавши стежки по діагоналі схилу — так підйом відчувається м'яким, а не сходами.</p>
