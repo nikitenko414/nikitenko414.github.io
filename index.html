@@ -68,6 +68,15 @@
         <a class="cta" href="#projects">Переглянути проєкти</a>
         <a class="cta-outline" href="#philosophy">Про бюро</a>
       </p>
+      <div class="intro-categories">
+        <p class="intro-categories-label">Або оберіть напрямок</p>
+        <nav class="intro-categories-links" aria-label="Категорії проєктів">
+          <a href="houses.html" data-preview="src/images/photos/1974596-640.jpg">Будинки</a>
+          <a href="commercial.html" data-preview="src/images/photos/290275-640.jpg">Комерція</a>
+          <a href="landscape.html" data-preview="src/images/photos/10177216-640.jpg">Ландшафт</a>
+          <a href="interior.html" data-preview="src/images/photos/9708531-640.jpg">Інтер'єр</a>
+        </nav>
+      </div>
     </div>
   </section>
 
@@ -351,5 +360,10 @@
   });
 })();
 </script>
+
+<div class="category-preview" id="category-preview" aria-hidden="true">
+  <img id="category-preview-img" src="" alt="" width="320" height="240" loading="lazy">
+</div>
+<script src="src/scripts/category-preview.js"></script>
 </body>
 </html>
