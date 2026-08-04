@@ -57,52 +57,15 @@ function scanHWalls(px, y0Pct, y1Pct, x0Pct, x1Pct, threshold = 150, step = 0.2)
   return peaks.sort((a,b) => b.darkness - a.darkness).map(p => ({ pct: p.pct.toFixed(2), darkness: p.darkness.toFixed(0) }));
 }
 
-// Casts a ray outward from (xPct,yPct) in one of 4 directions, sampling a
-// narrow perpendicular strip (bandPct wide, centered on the ray) at each
-// step, and returns the position (as %) of the first strong wall hit.
-// Starting *inside* a known room and walking outward, the first solid dark
-// line hit is virtually always that room's real wall — far more reliable
-// than guessing a boundary % and checking nearby.
-function castRay(px, xPct, yPct, direction, opts = {}) {
-  const bandPct = opts.bandPct || 3;
-  const threshold = opts.threshold || 150;
-  const step = opts.step || 0.15;
-  const band = Math.round(bandPct / 100 * (direction === 'left' || direction === 'right' ? px.height : px.width));
-  let pct = { left: xPct, right: xPct, up: yPct, down: yPct }[direction];
-  const limit = (direction === 'left' || direction === 'up') ? 0 : 100;
-  while ((direction === 'left' || direction === 'up') ? pct > limit : pct < limit) {
-    pct += (direction === 'left' || direction === 'up') ? -step : step;
-    let darkness;
-    if (direction === 'left' || direction === 'right') {
-      const x = Math.round(pct / 100 * px.width);
-      const yC = Math.round(yPct / 100 * px.height);
-      darkness = colDarkness(px, x, Math.max(0, Math.round(yC - band / 2)), Math.min(px.height, Math.round(yC + band / 2)));
-    } else {
-      const y = Math.round(pct / 100 * px.height);
-      const xC = Math.round(xPct / 100 * px.width);
-      darkness = rowDarkness(px, y, Math.max(0, Math.round(xC - band / 2)), Math.min(px.width, Math.round(xC + band / 2)));
-    }
-    if (darkness >= threshold) return { pct: Number(pct.toFixed(2)), darkness: Number(darkness.toFixed(0)) };
-  }
-  return { pct: Number(pct.toFixed(2)), darkness: null, hitEdge: true };
-}
+// NOTE: a fully-automatic "cast a ray from inside the room until it hits a
+// wall" approach was tried here (three variants: plain threshold, higher
+// threshold, thin-run-vs-wide-icon detection) and dropped — none converged
+// to reliable results on real floor-plan exports. Line weight is uneven
+// (JPEG compression, inconsistent stroke width) and furniture icons are
+// sometimes indistinguishable from walls by thickness alone. Use
+// scanVWalls/scanHWalls below instead: they surface every candidate wall
+// with a confidence score so a human/Claude can pick the right one by
+// looking at the plan, then verify with a rendered overlay before shipping.
+// See add-project/SKILL.md for the full workflow.
 
-// Given a point inside a room (xPct,yPct — away from furniture icons if
-// possible), finds all 4 surrounding walls and returns a CSS-ready box.
-function findRoomBox(px, xPct, yPct, opts = {}) {
-  const left = castRay(px, xPct, yPct, 'left', opts);
-  const right = castRay(px, xPct, yPct, 'right', opts);
-  const up = castRay(px, xPct, yPct, 'up', opts);
-  const down = castRay(px, xPct, yPct, 'down', opts);
-  return {
-    box: {
-      left: left.pct,
-      top: up.pct,
-      width: Number((right.pct - left.pct).toFixed(2)),
-      height: Number((down.pct - up.pct).toFixed(2)),
-    },
-    walls: { left, right, up, down },
-  };
-}
-
-module.exports = { loadPixels, scanVWalls, scanHWalls, castRay, findRoomBox, colDarkness, rowDarkness };
+module.exports = { loadPixels, scanVWalls, scanHWalls, colDarkness, rowDarkness };

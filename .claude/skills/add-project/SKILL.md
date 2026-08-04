@@ -88,18 +88,22 @@ don't re-ask the whole checklist.
    `.interactive-plan` wrapping the `<picture>` + one `<button class="room-hotspot" style="left:X%;top:Y%;width:W%;height:H%;">`
    per room (see `project-budynok-kyivska-oblast.html` for a full example).
    Getting the `%` boxes right is the hard part — **don't just eyeball
-   coordinates from the image, and don't trust a single automatic pass
-   either**. Both were tried and both produce visibly wrong boxes (rooms
-   bleeding into their neighbors). The process that actually works:
+   coordinates from the image, and don't try to fully automate it either**.
+   Both were tried. Eyeballing produces boxes that bleed into neighboring
+   rooms. Full automation (cast a ray from inside each room outward until it
+   hits a wall) was attempted three times with different heuristics —
+   plain darkness threshold, higher threshold, thin-line-vs-wide-icon run
+   length — and none converged: line weight in real floor-plan exports is
+   uneven (JPEG compression, inconsistent stroke width) and furniture icons
+   are sometimes indistinguishable from walls by thickness alone. The
+   process that actually works is a human-in-the-loop measurement, not a
+   guess and not a black box:
 
    1. Use `scripts/lib/wall-detector.js`'s `loadPixels` + `scanVWalls`/
       `scanHWalls` to scan a **wide** x or y range and list *every* candidate
       wall with a darkness score (0–255), not just the nearest one to a
       guess. Real walls in these line-drawing plans score 230–255; furniture/
-      appliance icons score lower (150–210) and will out you if you trust a
-      single nearby-peak search (`castRay`/`findRoomBox` in the same file
-      do this automatically and are tempting, but they walk straight into
-      furniture icons and stop early — don't rely on them alone).
+      appliance icons score lower (150–210).
    2. Cross-reference the candidate list against what you can see in the
       plan image yourself — you already know which room is which; the scan
       just gives you the precise pixel position of the wall between them.
