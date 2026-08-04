@@ -1,0 +1,56 @@
+name: Telegram intake
+
+# Polls the studio's Telegram bot for new photos/text and stages them into
+# telegram-inbox/ on a draft PR. Nothing here touches the live
+# site directly — a human (or Claude, when asked) still has to turn the raw
+# staged content into an actual page, and a human still merges the PR.
+#
+# Required repo secrets:
+#   TELEGRAM_BOT_TOKEN        — from @BotFather
+#   TELEGRAM_ALLOWED_CHAT_IDS — comma-separated chat/user ids allowed to submit
+#                               content (message the bot once, then read the
+#                               chat id from https://api.telegram.org/bot<token>/getUpdates)
+#
+# Also requires, under Settings → Actions → General → Workflow permissions:
+# "Allow GitHub Actions to create and approve pull requests".
+
+on:
+  schedule:
+    - cron: '13,43 * * * *'
+  workflow_dispatch: {}
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  fetch:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Fetch new Telegram content
+        env:
+          TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+          TELEGRAM_ALLOWED_CHAT_IDS: ${{ secrets.TELEGRAM_ALLOWED_CHAT_IDS }}
+        run: node scripts/telegram-fetch.js
+
+      - name: Open/update draft PR with staged content
+        uses: peter-evans/create-pull-request@v6
+        with:
+          commit-message: 'Telegram intake: stage new content'
+          branch: telegram-intake
+          delete-branch: false
+          draft: true
+          add-paths: telegram-inbox/**
+          title: 'Telegram inbox: new content to publish'
+          body: |
+            New raw content was pulled from the Telegram bot into
+            `telegram-inbox/`.
+
+            Ask Claude to run the `finish-telegram-draft` skill on this
+            branch to turn it into a real page, then review and merge.

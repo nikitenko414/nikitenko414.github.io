@@ -14,18 +14,25 @@ exactly — same header/nav, footer, and CSS classes from `src/styles/premium.cs
 1. **Slug & filename**: `blog-<english-slug>.html` in the project root, lowercase,
    hyphenated (content is Ukrainian, filenames stay English like the rest of the site).
 
-2. **Cover image — Pexels only, never Unsplash**:
-   Unsplash mixes in paid "Unsplash+" photos that render with a tiled watermark
-   even on non-`plus.` URLs — there's no way to tell from the URL alone. Pexels
-   has no such tier; every hotlinked photo is clean.
-   - `WebFetch` on `https://www.pexels.com/search/<query>/`, prompt it to list
-     direct `https://images.pexels.com/photos/...` URLs.
-   - Before using any URL, verify it with a HEAD request:
-     `Invoke-WebRequest -Uri <url> -Method Head -UseBasicParsing` (PowerShell) —
-     must return `200` and `Content-Type: image/jpeg`. Never paste a Pexels/Unsplash
-     URL into the site without this check.
-   - Size via query params: cover image `?auto=compress&cs=tinysrgb&fit=crop&w=1600&h=900`,
-     blog-grid thumbnail `...&w=1000&h=750`.
+2. **Cover image**:
+   - **Real photo provided** (e.g. relayed from Telegram): drop the raw file
+     in `content-incoming/<slug>/photos/`, run
+     `node scripts/process-local-images.js <slug>` — outputs
+     `src/images/photos/<slug>-photo-<n>-<width>.{avif,webp,jpg}` and prints
+     each variant's size in KB; check the cover/hero variant against the
+     200 KB budget from CLAUDE.md before using it.
+   - **No real photo yet — Pexels only, never Unsplash**: Unsplash mixes in
+     paid "Unsplash+" photos that render with a tiled watermark even on
+     non-`plus.` URLs — there's no way to tell from the URL alone. Pexels has
+     no such tier; every hotlinked photo is clean.
+     - `WebFetch` on `https://www.pexels.com/search/<query>/`, prompt it to list
+       direct `https://images.pexels.com/photos/...` URLs.
+     - Before using any URL, verify it with a HEAD request:
+       `Invoke-WebRequest -Uri <url> -Method Head -UseBasicParsing` (PowerShell) —
+       must return `200` and `Content-Type: image/jpeg`. Never paste a Pexels/Unsplash
+       URL into the site without this check.
+     - Size via query params: cover image `?auto=compress&cs=tinysrgb&fit=crop&w=1600&h=900`,
+       blog-grid thumbnail `...&w=1000&h=750`.
 
 3. **Copy an existing post file** as the starting point (`blog-materials.html` is
    a good template) and update:
@@ -53,7 +60,10 @@ exactly — same header/nav, footer, and CSS classes from `src/styles/premium.cs
    `#journal` carousel ("Нотатки бюро"). If the new post should be featured,
    swap it in for the oldest of the current three.
 
-6. **Verify before reporting done**:
+6. **Add to `sitemap.xml`**: a `<url>` entry with `priority 0.6` and
+   `lastmod` set to today's date — same shape as the other `blog-*` entries.
+
+7. **Verify before reporting done**:
    - Use the local `static-site` preview server (`preview_start` with the
      `.claude/launch.json` config already in this project) — never `file://`
      navigation for re-checking edits, it serves a cached static snapshot from
@@ -70,4 +80,5 @@ exactly — same header/nav, footer, and CSS classes from `src/styles/premium.cs
 - Colors only via CSS variables already defined in `premium.css`
 - `loading="eager" fetchpriority="high"` on the cover image (it's the first
   thing in the article), nothing else on the page should be eager
-- No new font families — this site uses exactly Fraunces + Work Sans everywhere
+- No new font families — this site uses exactly Italiana + Work Sans
+  everywhere (see `--font-display`/`--font-body` in `premium.css`)

@@ -375,6 +375,51 @@ a {
   filter: grayscale(1) contrast(1.15);
 }
 
+.project-plans {
+  margin-top: var(--space-5);
+}
+
+.project-plans h2 {
+  font-family: var(--font-display);
+  font-size: 26px;
+  font-weight: 600;
+  margin-bottom: var(--space-3);
+}
+
+.plans-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: var(--space-4);
+}
+
+.plans-grid figure {
+  background: var(--color-text);
+  border: 1px solid var(--color-line);
+  border-radius: 4px;
+  padding: var(--space-3);
+}
+
+.plans-grid img {
+  width: 100%;
+  height: auto;
+  display: block;
+}
+
+.plans-grid figcaption {
+  margin-top: var(--space-2);
+  font-size: 13px;
+  color: var(--color-muted);
+}
+
+.plan-download {
+  display: inline-block;
+  margin-top: var(--space-3);
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--color-accent-dark);
+  border-bottom: 1px solid var(--color-accent-dark);
+}
+
 .back-link {
   display: inline-block;
   margin-bottom: var(--space-4);
