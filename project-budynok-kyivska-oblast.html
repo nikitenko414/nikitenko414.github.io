@@ -90,15 +90,75 @@
       <h2 id="plans-heading">План поверху</h2>
       <div class="plans-grid">
         <figure>
-          <picture>
+          <div class="interactive-plan">
+            <picture>
       <source type="image/avif" srcset="src/images/photos/budynok-kyivska-oblast-plan-1-640.avif 640w, src/images/photos/budynok-kyivska-oblast-plan-1-1280.avif 1280w, src/images/photos/budynok-kyivska-oblast-plan-1-1920.avif 1920w" sizes="(max-width: 640px) 100vw, 800px">
       <source type="image/webp" srcset="src/images/photos/budynok-kyivska-oblast-plan-1-640.webp 640w, src/images/photos/budynok-kyivska-oblast-plan-1-1280.webp 1280w, src/images/photos/budynok-kyivska-oblast-plan-1-1920.webp 1920w" sizes="(max-width: 640px) 100vw, 800px">
       <img src="src/images/photos/budynok-kyivska-oblast-plan-1-1280.jpg" srcset="src/images/photos/budynok-kyivska-oblast-plan-1-640.jpg 640w, src/images/photos/budynok-kyivska-oblast-plan-1-1280.jpg 1280w, src/images/photos/budynok-kyivska-oblast-plan-1-1920.jpg 1920w" sizes="(max-width: 640px) 100vw, 800px" width="2481" height="1754" alt="Поверховий план будинку в Київській області: вітальня, кухня-їдальня, шеф-кухня, майстер-спальня, дитяча кімната, кабінет і тераса" loading="lazy">
     </picture>
-          <figcaption>Забудова 21 × 18,5 м · тераса 61,57 м²</figcaption>
+            <button type="button" class="room-hotspot" style="left:18%;top:7%;width:42%;height:24%;" aria-label="Тераса, 61,57 м²"><span class="room-highlight"></span><span class="room-tooltip">Тераса · 61,57 м²</span></button>
+            <button type="button" class="room-hotspot" style="left:18%;top:31%;width:8.6%;height:14%;" aria-label="Інвентарна, 7,75 м²"><span class="room-highlight"></span><span class="room-tooltip">Інвентарна · 7,75 м²</span></button>
+            <button type="button" class="room-hotspot" style="left:26.6%;top:31%;width:7.4%;height:14%;" aria-label="Котельня, 7,01 м²"><span class="room-highlight"></span><span class="room-tooltip">Котельня · 7,01 м²</span></button>
+            <button type="button" class="room-hotspot" style="left:34%;top:30%;width:9%;height:22.3%;" aria-label="Шеф-кухня, 12,65 м²"><span class="room-highlight"></span><span class="room-tooltip">Шеф-кухня · 12,65 м²</span></button>
+            <button type="button" class="room-hotspot" style="left:43%;top:28.8%;width:16.6%;height:23%;" aria-label="Кухня-їдальня, 24,10 м²"><span class="room-highlight"></span><span class="room-tooltip">Кухня-їдальня · 24,10 м²</span></button>
+            <button type="button" class="room-hotspot" style="left:33.5%;top:52.3%;width:7.9%;height:12%;" aria-label="Гардеробна, 7,48 м²"><span class="room-highlight"></span><span class="room-tooltip">Гардеробна · 7,48 м²</span></button>
+            <button type="button" class="room-hotspot" style="left:33.5%;top:64.3%;width:7.9%;height:14%;" aria-label="Передпокій, 5,63 м²"><span class="room-highlight"></span><span class="room-tooltip">Передпокій · 5,63 м²</span></button>
+            <button type="button" class="room-hotspot" style="left:41.4%;top:51.8%;width:19.3%;height:40.1%;" aria-label="Вітальня, 33,17 м²"><span class="room-highlight"></span><span class="room-tooltip">Вітальня · 33,17 м²</span></button>
+            <button type="button" class="room-hotspot" style="left:59.6%;top:23%;width:9.2%;height:18%;" aria-label="Майстер-санвузол, 7,63 м²"><span class="room-highlight"></span><span class="room-tooltip">Майстер-санвузол · 7,63 м²</span></button>
+            <button type="button" class="room-hotspot" style="left:68.8%;top:23%;width:14.6%;height:29%;" aria-label="Майстер-спальня, 23,25 м²"><span class="room-highlight"></span><span class="room-tooltip">Майстер-спальня · 23,25 м²</span></button>
+            <button type="button" class="room-hotspot" style="left:59.6%;top:41%;width:9.2%;height:11.3%;" aria-label="Майстер-гардеробна, 6,42 м²"><span class="room-highlight"></span><span class="room-tooltip">Майстер-гардеробна · 6,42 м²</span></button>
+            <button type="button" class="room-hotspot" style="left:60%;top:52.3%;width:12.5%;height:7.2%;" aria-label="Коридор, 11,10 м²"><span class="room-highlight"></span><span class="room-tooltip">Коридор · 11,10 м²</span></button>
+            <button type="button" class="room-hotspot" style="left:72.5%;top:48%;width:10.9%;height:15.9%;" aria-label="Ванна кімната, 7,20 м²"><span class="room-highlight"></span><span class="room-tooltip">Ванна кімната · 7,20 м²</span></button>
+            <button type="button" class="room-hotspot" style="left:59.6%;top:59.5%;width:9%;height:11.4%;" aria-label="Пральня, 4,83 м²"><span class="room-highlight"></span><span class="room-tooltip">Пральня · 4,83 м²</span></button>
+            <button type="button" class="room-hotspot" style="left:74.4%;top:63.9%;width:9%;height:6.85%;" aria-label="Гардеробна, 3,50 м²"><span class="room-highlight"></span><span class="room-tooltip">Гардеробна · 3,50 м²</span></button>
+            <button type="button" class="room-hotspot" style="left:60.7%;top:70.9%;width:10%;height:20.15%;" aria-label="Кабінет, 13,15 м²"><span class="room-highlight"></span><span class="room-tooltip">Кабінет · 13,15 м²</span></button>
+            <button type="button" class="room-hotspot" style="left:70.74%;top:70.75%;width:16%;height:19.5%;" aria-label="Дитяча кімната, 14,91 м²"><span class="room-highlight"></span><span class="room-tooltip">Дитяча кімната · 14,91 м²</span></button>
+          </div>
+          <figcaption>Забудова 21 × 18,5 м · тераса 61,57 м² — наведіть на кімнату, щоб побачити площу</figcaption>
         </figure>
       </div>
       <a class="plan-download" href="src/plans/budynok-kyivska-oblast.pdf" download>Завантажити повний план (PDF)</a>
+    </section>
+    <nav class="project-nav" aria-label="Інші проєкти">
+      <a class="project-nav-link project-nav-prev" href="project-budynok-terasa.html">
+        <span class="project-nav-dir">← Попередній проєкт</span>
+        <span class="project-nav-title">Будинок «Тераса»</span>
+      </a>
+      <a class="project-nav-link project-nav-next" href="project-villa-sosnovyi-bir.html">
+        <span class="project-nav-dir">Наступний проєкт →</span>
+        <span class="project-nav-title">Вілла «Сосновий Бір»</span>
+      </a>
+    </nav>
+    <section class="related-projects" aria-labelledby="related-heading">
+      <h2 id="related-heading">Схожі проєкти</h2>
+      <div class="related-grid">
+        <article class="project-card">
+          <a href="project-budynok-terasa.html">
+            <figure>
+              <picture>
+      <source type="image/avif" srcset="src/images/photos/7587879-640.avif 640w, src/images/photos/7587879-1280.avif 1280w, src/images/photos/7587879-1920.avif 1920w" sizes="(max-width: 640px) 100vw, 400px">
+      <source type="image/webp" srcset="src/images/photos/7587879-640.webp 640w, src/images/photos/7587879-1280.webp 1280w, src/images/photos/7587879-1920.webp 1920w" sizes="(max-width: 640px) 100vw, 400px">
+      <img src="src/images/photos/7587879-1920.jpg" srcset="src/images/photos/7587879-640.jpg 640w, src/images/photos/7587879-1280.jpg 1280w, src/images/photos/7587879-1920.jpg 1920w" sizes="(max-width: 640px) 100vw, 400px" width="1000" height="1250" alt="Тимчасове фото проєкту «Будинок Тераса» (заглушка для візуалу, Pexels)" loading="lazy">
+    </picture>
+            </figure>
+            <p class="kicker">Ірпінь, 2024</p>
+            <h3>Будинок «Тераса»</h3>
+          </a>
+        </article>
+        <article class="project-card">
+          <a href="project-villa-sosnovyi-bir.html">
+            <figure>
+              <picture>
+      <source type="image/avif" srcset="src/images/photos/15422346-640.avif 640w, src/images/photos/15422346-1280.avif 1280w, src/images/photos/15422346-1920.avif 1920w" sizes="(max-width: 640px) 100vw, 400px">
+      <source type="image/webp" srcset="src/images/photos/15422346-640.webp 640w, src/images/photos/15422346-1280.webp 1280w, src/images/photos/15422346-1920.webp 1920w" sizes="(max-width: 640px) 100vw, 400px">
+      <img src="src/images/photos/15422346-1920.jpg" srcset="src/images/photos/15422346-640.jpg 640w, src/images/photos/15422346-1280.jpg 1280w, src/images/photos/15422346-1920.jpg 1920w" sizes="(max-width: 640px) 100vw, 400px" width="1000" height="1250" alt="Тимчасове фото проєкту «Вілла Сосновий Бір» (заглушка для візуалу, Pexels)" loading="lazy">
+    </picture>
+            </figure>
+            <p class="kicker">Буча, 2020</p>
+            <h3>Вілла «Сосновий Бір»</h3>
+          </a>
+        </article>
+      </div>
     </section>
   </article>
 </main>
@@ -127,5 +187,6 @@
     <a href="blog.html">Блог</a>
   </div>
 </footer>
+<script src="src/scripts/scroll-reveal.js"></script>
 </body>
 </html>

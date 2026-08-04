@@ -405,6 +405,72 @@ a {
   display: block;
 }
 
+/* Interactive plan — hoverable/focusable room hotspots over a plan image */
+.interactive-plan {
+  position: relative;
+  display: block;
+  line-height: 0;
+}
+
+.room-hotspot {
+  position: absolute;
+  border: none;
+  background: none;
+  padding: 0;
+  margin: 0;
+  cursor: pointer;
+}
+
+.room-hotspot:focus-visible {
+  outline: 2px solid var(--color-focus);
+  outline-offset: 2px;
+}
+
+.room-highlight {
+  position: absolute;
+  inset: 0;
+  background: var(--color-accent-dark);
+  opacity: 0;
+  transition: opacity 240ms ease;
+}
+
+.room-hotspot:hover .room-highlight,
+.room-hotspot:focus-visible .room-highlight {
+  opacity: 0.32;
+}
+
+.room-tooltip {
+  position: absolute;
+  bottom: 100%;
+  left: 50%;
+  transform: translate(-50%, 6px);
+  opacity: 0;
+  pointer-events: none;
+  background: var(--color-bg);
+  color: var(--color-text);
+  border: 1px solid var(--color-line);
+  border-radius: 4px;
+  padding: var(--space-1) var(--space-2);
+  font-size: 12px;
+  line-height: 1.4;
+  white-space: nowrap;
+  transition: opacity 240ms ease, transform 240ms ease;
+  z-index: 2;
+}
+
+.room-hotspot:hover .room-tooltip,
+.room-hotspot:focus-visible .room-tooltip {
+  opacity: 1;
+  transform: translate(-50%, 0);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .room-highlight,
+  .room-tooltip {
+    transition: none;
+  }
+}
+
 .plans-grid figcaption {
   margin-top: var(--space-2);
   font-size: 13px;
@@ -418,6 +484,72 @@ a {
   font-weight: 600;
   color: var(--color-accent-dark);
   border-bottom: 1px solid var(--color-accent-dark);
+}
+
+/* Prev/next project navigation */
+.project-nav {
+  display: flex;
+  justify-content: space-between;
+  gap: var(--space-4);
+  margin-top: var(--space-6);
+  padding-top: var(--space-4);
+  border-top: 1px solid var(--color-line);
+}
+
+.project-nav-link {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+  max-width: 46%;
+}
+
+.project-nav-next {
+  text-align: right;
+  align-items: flex-end;
+  margin-left: auto;
+}
+
+.project-nav-dir {
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  font-weight: 600;
+  color: var(--color-muted);
+}
+
+.project-nav-title {
+  font-family: var(--font-display);
+  font-size: clamp(18px, 3vw, 24px);
+  font-weight: 600;
+  color: var(--color-text);
+  transition: color 240ms ease;
+}
+
+.project-nav-link:hover .project-nav-title,
+.project-nav-link:focus-visible .project-nav-title {
+  color: var(--color-accent-dark);
+}
+
+/* Related projects */
+.related-projects {
+  margin-top: var(--space-6);
+}
+
+.related-projects h2 {
+  font-family: var(--font-display);
+  font-size: 26px;
+  font-weight: 600;
+  margin-bottom: var(--space-4);
+}
+
+.related-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: var(--space-4);
+}
+
+.related-grid .project-card {
+  flex: initial;
 }
 
 .back-link {
@@ -763,6 +895,159 @@ a {
 .newsletter-form button:hover,
 .newsletter-form button:focus-visible {
   background: var(--color-accent-hover);
+}
+
+/* Testimonials */
+.testimonials-placeholder {
+  color: var(--color-muted);
+  font-style: italic;
+  padding-block: var(--space-3);
+}
+
+.testimonials-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: var(--space-4);
+  margin-top: var(--space-4);
+}
+
+.testimonial-card {
+  border: 1px solid var(--color-line);
+  border-radius: 4px;
+  padding: var(--space-4);
+}
+
+.testimonial-card p {
+  font-size: 17px;
+  line-height: 1.6;
+  margin-bottom: var(--space-3);
+}
+
+.testimonial-card cite {
+  display: block;
+  font-style: normal;
+  font-size: 13px;
+  color: var(--color-muted);
+}
+
+/* Start-project intake form */
+.start-project {
+  max-width: 640px;
+}
+
+.start-project > p {
+  color: var(--color-muted);
+  margin-bottom: var(--space-4);
+}
+
+.intake-step legend {
+  font-size: 13px;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  font-weight: 600;
+  color: var(--color-muted);
+  margin-bottom: var(--space-3);
+  padding: 0;
+}
+
+.intake-options {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+}
+
+.intake-option {
+  border: 1px solid var(--color-line);
+  background: transparent;
+  color: var(--color-text);
+  padding: var(--space-2) var(--space-4);
+  border-radius: 2px;
+  font-size: 15px;
+  font-family: var(--font-body);
+  cursor: pointer;
+  transition: border-color 240ms ease, color 240ms ease;
+}
+
+.intake-option:hover,
+.intake-option:focus-visible {
+  border-color: var(--color-accent-dark);
+  color: var(--color-accent-dark);
+}
+
+.intake-step label {
+  display: block;
+  font-size: 13px;
+  color: var(--color-muted);
+  margin-bottom: var(--space-1);
+}
+
+.intake-step input[type="text"],
+.intake-step input[type="email"] {
+  width: 100%;
+  padding: var(--space-3);
+  border: 1px solid var(--color-line);
+  border-radius: 2px;
+  background: var(--color-bg-alt);
+  color: var(--color-text);
+  font-family: var(--font-body);
+  font-size: 15px;
+  margin-bottom: var(--space-3);
+}
+
+.intake-next,
+.intake-submit {
+  display: inline-block;
+  background: var(--color-accent);
+  color: #fff;
+  font-weight: 600;
+  font-size: 15px;
+  padding: var(--space-3) var(--space-4);
+  border-radius: 2px;
+  border: none;
+  cursor: pointer;
+}
+
+.intake-next:hover, .intake-next:focus-visible,
+.intake-submit:hover, .intake-submit:focus-visible {
+  background: var(--color-accent-hover);
+}
+
+.intake-progress {
+  display: flex;
+  gap: var(--space-2);
+  margin-top: var(--space-4);
+}
+
+.intake-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--color-line);
+  transition: background 240ms ease;
+}
+
+.intake-dot.active {
+  background: var(--color-accent-dark);
+}
+
+/* Scroll-reveal (transform/opacity only; instant when reduced motion is on) */
+.reveal-on-scroll {
+  opacity: 0;
+  transform: translateY(16px);
+  transition: opacity 400ms ease, transform 400ms ease;
+}
+
+.reveal-on-scroll.is-visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .reveal-on-scroll {
+    opacity: 1;
+    transform: none;
+    transition: none;
+  }
 }
 
 /* Footer */

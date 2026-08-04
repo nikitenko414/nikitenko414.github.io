@@ -183,6 +183,17 @@
     </div>
   </section>
 
+  <section class="section" id="testimonials" aria-labelledby="testimonials-heading">
+    <div class="wrap">
+      <p class="kicker">Відгуки</p>
+      <h2 id="testimonials-heading">Що кажуть клієнти</h2>
+      <!-- Real client testimonials go here as .testimonial-card items inside
+           a .testimonials-grid (see .testimonial-card in premium.css) once
+           the studio has them — not fabricated ahead of time. -->
+      <p class="testimonials-placeholder">Перші відгуки клієнтів з'являться тут найближчим часом.</p>
+    </div>
+  </section>
+
   <section class="section" id="process" aria-labelledby="process-heading">
     <div class="wrap">
       <div class="section-head">
@@ -289,6 +300,54 @@
     </div>
   </section>
 
+  <section class="section alt" id="start-project" aria-labelledby="start-project-heading">
+    <div class="wrap start-project">
+      <p class="kicker">Заявка</p>
+      <h2 id="start-project-heading">Почати проєкт</h2>
+      <p>Коротко розкажіть про задум — ми зв'яжемось протягом 1-2 днів.</p>
+      <form class="intake-form" id="intake-form" novalidate>
+        <fieldset class="intake-step" data-step="1">
+          <legend>Тип проєкту</legend>
+          <div class="intake-options" role="group" aria-label="Тип проєкту">
+            <button type="button" class="intake-option" data-field="type" data-value="Будинок">Будинок</button>
+            <button type="button" class="intake-option" data-field="type" data-value="Комерція">Комерція</button>
+            <button type="button" class="intake-option" data-field="type" data-value="Ландшафт">Ландшафт</button>
+            <button type="button" class="intake-option" data-field="type" data-value="Інтер'єр">Інтер'єр</button>
+          </div>
+        </fieldset>
+        <fieldset class="intake-step" data-step="2" hidden>
+          <legend>Бюджетна вилка</legend>
+          <div class="intake-options" role="group" aria-label="Бюджет">
+            <button type="button" class="intake-option" data-field="budget" data-value="до $50 000">до $50 000</button>
+            <button type="button" class="intake-option" data-field="budget" data-value="$50 000–150 000">$50 000–150 000</button>
+            <button type="button" class="intake-option" data-field="budget" data-value="$150 000+">$150 000+</button>
+            <button type="button" class="intake-option" data-field="budget" data-value="ще не визначено">Ще не визначено</button>
+          </div>
+        </fieldset>
+        <fieldset class="intake-step" data-step="3" hidden>
+          <legend>Локація</legend>
+          <label for="intake-location">Місто/область</label>
+          <input type="text" id="intake-location" name="location" placeholder="Наприклад, Київська область">
+          <button type="button" class="intake-next" data-next="4">Далі →</button>
+        </fieldset>
+        <fieldset class="intake-step" data-step="4" hidden>
+          <legend>Контакт</legend>
+          <label for="intake-name">Ім'я</label>
+          <input type="text" id="intake-name" name="name" autocomplete="name" required>
+          <label for="intake-contact">Email або телефон</label>
+          <input type="text" id="intake-contact" name="contact" autocomplete="email" required>
+          <a class="intake-submit" id="intake-submit" href="mailto:studio@forma-arch.ua">Надіслати заявку</a>
+        </fieldset>
+      </form>
+      <div class="intake-progress" aria-hidden="true">
+        <span class="intake-dot active" data-dot="1"></span>
+        <span class="intake-dot" data-dot="2"></span>
+        <span class="intake-dot" data-dot="3"></span>
+        <span class="intake-dot" data-dot="4"></span>
+      </div>
+    </div>
+  </section>
+
   <section class="newsletter" aria-labelledby="newsletter-heading">
     <div class="wrap">
       <h2 id="newsletter-heading">Будьте в курсі нових проєктів</h2>
@@ -360,6 +419,55 @@
       dot.setAttribute('aria-current', 'true');
     });
   });
+
+  // "Почати проєкт" intake — progressive fieldset reveal, no backend: the
+  // final action is a real mailto: link pre-filled from the answers.
+  var intakeForm = document.getElementById('intake-form');
+  if (intakeForm) {
+    var state = {};
+    var intakeSteps = intakeForm.querySelectorAll('.intake-step');
+    var intakeDots = document.querySelectorAll('.intake-dot');
+
+    var showIntakeStep = function (n) {
+      intakeSteps.forEach(function (s) { s.hidden = Number(s.dataset.step) !== n; });
+      intakeDots.forEach(function (d) { d.classList.toggle('active', Number(d.dataset.dot) <= n); });
+      var active = intakeForm.querySelector('.intake-step[data-step="' + n + '"]');
+      if (active) {
+        var firstControl = active.querySelector('button, input');
+        if (firstControl) firstControl.focus();
+      }
+    };
+
+    intakeForm.querySelectorAll('.intake-option').forEach(function (btn) {
+      btn.addEventListener('click', function () {
+        state[btn.dataset.field] = btn.dataset.value;
+        var currentStep = Number(btn.closest('.intake-step').dataset.step);
+        showIntakeStep(currentStep + 1);
+      });
+    });
+
+    var intakeNext = intakeForm.querySelector('.intake-next');
+    if (intakeNext) {
+      intakeNext.addEventListener('click', function () {
+        state.location = document.getElementById('intake-location').value;
+        showIntakeStep(Number(intakeNext.dataset.next));
+      });
+    }
+
+    var intakeSubmit = document.getElementById('intake-submit');
+    var updateMailto = function () {
+      var name = document.getElementById('intake-name').value;
+      var contact = document.getElementById('intake-contact').value;
+      var subject = 'Заявка на проєкт: ' + (state.type || '');
+      var body = 'Тип проєкту: ' + (state.type || '') + '\nБюджет: ' + (state.budget || '') +
+        '\nЛокація: ' + (state.location || '') + '\nІм\'я: ' + name + '\nКонтакт: ' + contact;
+      intakeSubmit.href = 'mailto:studio@forma-arch.ua?subject=' + encodeURIComponent(subject) + '&body=' + encodeURIComponent(body);
+    };
+    ['intake-name', 'intake-contact'].forEach(function (id) {
+      var el = document.getElementById(id);
+      if (el) el.addEventListener('input', updateMailto);
+    });
+  }
 })();
 </script>
 
@@ -367,5 +475,6 @@
   <img id="category-preview-img" src="" alt="" width="320" height="240" loading="lazy">
 </div>
 <script src="src/scripts/category-preview.js"></script>
+<script src="src/scripts/scroll-reveal.js"></script>
 </body>
 </html>
