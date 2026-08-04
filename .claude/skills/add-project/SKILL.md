@@ -83,6 +83,35 @@ don't re-ask the whole checklist.
    images get a light card background (not the grayscale photo filter),
    since they're line drawings that need to stay legible on the dark page.
 
+   **Interactive room hotspots (optional, do only if asked)**: hovering/
+   focusing a room highlights it on the plan and shows its area — markup is
+   `.interactive-plan` wrapping the `<picture>` + one `<button class="room-hotspot" style="left:X%;top:Y%;width:W%;height:H%;">`
+   per room (see `project-budynok-kyivska-oblast.html` for a full example).
+   Getting the `%` boxes right is the hard part — **don't just eyeball
+   coordinates from the image, and don't trust a single automatic pass
+   either**. Both were tried and both produce visibly wrong boxes (rooms
+   bleeding into their neighbors). The process that actually works:
+
+   1. Use `scripts/lib/wall-detector.js`'s `loadPixels` + `scanVWalls`/
+      `scanHWalls` to scan a **wide** x or y range and list *every* candidate
+      wall with a darkness score (0–255), not just the nearest one to a
+      guess. Real walls in these line-drawing plans score 230–255; furniture/
+      appliance icons score lower (150–210) and will out you if you trust a
+      single nearby-peak search (`castRay`/`findRoomBox` in the same file
+      do this automatically and are tempting, but they walk straight into
+      furniture icons and stop early — don't rely on them alone).
+   2. Cross-reference the candidate list against what you can see in the
+      plan image yourself — you already know which room is which; the scan
+      just gives you the precise pixel position of the wall between them.
+   3. Composite the boxes you've derived onto a copy of the plan with sharp
+      (draw a semi-transparent rect + label per room, see git history on
+      `project-budynok-kyivska-oblast.html` for the exact snippet) and
+      **view that image** before touching the live HTML. If anything's off,
+      fix that room's numbers and re-render — don't skip straight to the
+      page.
+   4. Only after the overlay looks right, write the `%` values into the
+      `room-hotspot` buttons.
+
 4. **Fill the template**: `<title>` (≤60 chars), `<meta name="description">`
    (≤155 chars), `<link rel="canonical">` → `/project-<slug>.html`, OG
    title/description/image/url, JSON-LD `ImageObject` (real `contentUrl` —
