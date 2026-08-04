@@ -5,12 +5,13 @@ description: Add a new project case-study page to the FORMA architecture site (h
 
 # Adding a project page to FORMA
 
-The site is static HTML (no CMS). Every category — `houses.html`,
-`commercial.html`, `landscape.html`, `interior.html` — links out to
-`project-<slug>.html` pages that all share one structural pattern (same
-header/nav/footer, `.article-header`, `.article-cover`, `.article-body`,
-`.project-gallery`, and now optionally `.project-plans`). Copy an existing
-page as your template — e.g. `project-villa-sosnovyi-bir.html`.
+The site builds with **Eleventy** (11ty): `views/*.njk` templates compile to
+the flat HTML files GitHub Pages actually serves (`npm run build`, config in
+`.eleventy.js`). Header/nav/footer live once in `views/_includes/base.njk`
+— you never touch them for a new project. Every category page — `houses.html`
+(`views/houses.njk`), `commercial.html`, `landscape.html`, `interior.html` —
+links out to `project-<slug>.html` pages, each built from
+`views/projects/<slug>.njk`.
 
 Content usually arrives as a raw dump from the studio (often relayed from a
 Telegram message the client/colleague sent). Your job is to turn that into a
@@ -36,8 +37,17 @@ don't re-ask the whole checklist.
 
 ## Steps
 
-1. **Slug & filename**: `project-<english-slug>.html` in the project root,
-   lowercase, hyphenated — same convention as the existing project pages.
+1. **Slug & template**: copy an existing `views/projects/*.njk` file (e.g.
+   `villa-sosnovyi-bir.njk`) to `views/projects/<english-slug>.njk` —
+   lowercase, hyphenated, same convention as the existing slugs. Its front
+   matter needs: `title`, `description`, `canonical` (`/project-<slug>.html`),
+   `ogTitle`/`ogDescription`/`ogType`/`ogUrl`/`ogImage`, `currentNav` (the
+   category: `houses`/`commercial`/`landscape`/`interior`),
+   `permalink: "/project-<slug>.html"`, `layout: base.njk`, and `jsonld:` (a
+   `|`-block YAML scalar holding the raw `ImageObject` JSON — copy the shape
+   from an existing template). The body below the `---` is *only* the
+   `<article>` content — no `<!doctype>`, `<head>`, header, or footer, the
+   layout supplies all of that.
 
 2. **Photos**:
    - **Real photos provided** (the normal case going forward): put the raw
@@ -57,8 +67,8 @@ don't re-ask the whole checklist.
 3. **Floor plans** (only if provided): raw files in
    `content-incoming/<slug>/plans/` (images and/or one PDF), same command as
    above — it also copies any PDF straight to `src/plans/<slug>.pdf`
-   untouched. Add this section to the page (after `.project-gallery`, or
-   wherever fits the content):
+   untouched. Add this section to the template body (after `.project-gallery`,
+   or wherever fits the content):
 
    ```html
    <section class="project-plans" aria-labelledby="plans-heading">
@@ -86,18 +96,18 @@ don't re-ask the whole checklist.
    **Interactive room hotspots (optional, do only if asked)**: hovering/
    focusing a room highlights it on the plan and shows its area — markup is
    `.interactive-plan` wrapping the `<picture>` + one `<button class="room-hotspot" style="left:X%;top:Y%;width:W%;height:H%;">`
-   per room (see `project-budynok-kyivska-oblast.html` for a full example).
-   Getting the `%` boxes right is the hard part — **don't just eyeball
-   coordinates from the image, and don't try to fully automate it either**.
-   Both were tried. Eyeballing produces boxes that bleed into neighboring
-   rooms. Full automation (cast a ray from inside each room outward until it
-   hits a wall) was attempted three times with different heuristics —
-   plain darkness threshold, higher threshold, thin-line-vs-wide-icon run
-   length — and none converged: line weight in real floor-plan exports is
-   uneven (JPEG compression, inconsistent stroke width) and furniture icons
-   are sometimes indistinguishable from walls by thickness alone. The
-   process that actually works is a human-in-the-loop measurement, not a
-   guess and not a black box:
+   per room (see `views/projects/budynok-kyivska-oblast.njk` for a full
+   example). Getting the `%` boxes right is the hard part — **don't just
+   eyeball coordinates from the image, and don't try to fully automate it
+   either**. Both were tried. Eyeballing produces boxes that bleed into
+   neighboring rooms. Full automation (cast a ray from inside each room
+   outward until it hits a wall) was attempted three times with different
+   heuristics — plain darkness threshold, higher threshold, thin-line-vs-wide-
+   icon run length — and none converged: line weight in real floor-plan
+   exports is uneven (JPEG compression, inconsistent stroke width) and
+   furniture icons are sometimes indistinguishable from walls by thickness
+   alone. The process that actually works is a human-in-the-loop
+   measurement, not a guess and not a black box:
 
    1. Use `scripts/lib/wall-detector.js`'s `loadPixels` + `scanVWalls`/
       `scanHWalls` to scan a **wide** x or y range and list *every* candidate
@@ -109,37 +119,41 @@ don't re-ask the whole checklist.
       just gives you the precise pixel position of the wall between them.
    3. Composite the boxes you've derived onto a copy of the plan with sharp
       (draw a semi-transparent rect + label per room, see git history on
-      `project-budynok-kyivska-oblast.html` for the exact snippet) and
-      **view that image** before touching the live HTML. If anything's off,
-      fix that room's numbers and re-render — don't skip straight to the
-      page.
+      `views/projects/budynok-kyivska-oblast.njk` for the exact snippet) and
+      **view that image** before touching the live template. If anything's
+      off, fix that room's numbers and re-render — don't skip straight to
+      the page.
    4. Only after the overlay looks right, write the `%` values into the
       `room-hotspot` buttons.
 
-4. **Fill the template**: `<title>` (≤60 chars), `<meta name="description">`
-   (≤155 chars), `<link rel="canonical">` → `/project-<slug>.html`, OG
-   title/description/image/url, JSON-LD `ImageObject` (real `contentUrl` —
-   the hero's largest variant, or the Pexels URL if using a placeholder).
-   Hero `<img>` keeps `loading="eager" fetchpriority="high"` — nothing else
-   on the page should be eager. `.article-body`: 2–4 paragraphs from the raw
-   text, edited into the site's tone (concrete, grounded in practice — not
-   marketing filler). `.project-tags`: link back to the category page
-   (`houses.html` etc.), plus any secondary category that applies.
+4. **Fill the template**: front matter `title` (≤60 chars), `description`
+   (≤155 chars), OG title/description/image/url, JSON-LD `ImageObject` (real
+   `contentUrl` — the hero's largest variant, or the Pexels URL if using a
+   placeholder). Hero `<img>` keeps `loading="eager" fetchpriority="high"` —
+   nothing else on the page should be eager. `.article-body`: 2–4 paragraphs
+   from the raw text, edited into the site's tone (concrete, grounded in
+   practice — not marketing filler). `.project-tags`: link back to the
+   category page (`houses.html` etc.), plus any secondary category that
+   applies.
 
-5. **Add a card to the category listing page** (`houses.html` /
-   `commercial.html` / `landscape.html` / `interior.html`): new
-   `<article class="project-card">` in the `#projects-carousel`, same shape
-   as the existing ones (picture + `.kicker` + `<h3>`). New project goes
-   first.
+5. **Add a card to the category listing template**
+   (`views/houses.njk` / `views/commercial.njk` / `views/landscape.njk` /
+   `views/interior.njk`): new `<article class="project-card">` in the
+   `#projects-carousel`, same shape as the existing ones (picture + `.kicker`
+   + `<h3>`). New project goes first.
 
-6. **Add to `sitemap.xml`**: a `<url>` entry with `priority 0.6` and
-   `lastmod` set to today's date — same shape as the existing `project-*`
-   entries.
+6. **Add to `sitemap.xml`** (this one file stays hand-edited, outside the
+   11ty build): a `<url>` entry with `priority 0.6` and `lastmod` set to
+   today's date — same shape as the existing `project-*` entries.
 
-7. **Optional — feature on the homepage**: `index.html` has a project
+7. **Optional — feature on the homepage**: `views/index.njk` has a project
    carousel; swap the new project in for the oldest one if asked to feature it.
 
-8. **Verify before reporting done**:
+8. **Build**: `npm run build` — regenerates every changed page (and only
+   those) from the `views/` sources into the actual root `*.html` files.
+   Commit both the `.njk` source and the regenerated `.html` together.
+
+9. **Verify before reporting done**:
    - `preview_start` with the `static-site` config from `.claude/launch.json`
      — never `file://`, it serves a stale cached snapshot.
    - `get_page_text` on the new page (screenshot/`computer` has been flaky in

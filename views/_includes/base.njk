@@ -3,42 +3,40 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Сторінку не знайдено — FORMA</title>
-<meta name="description" content="Сторінку не знайдено на сайті архітектурної студії FORMA.">
-<meta name="robots" content="noindex">
-<link rel="canonical" href="/404.html">
-<meta property="og:title" content="Сторінку не знайдено — FORMA">
-<meta property="og:description" content="Сторінку не знайдено на сайті архітектурної студії FORMA.">
-<meta property="og:type" content="website">
-<link rel="icon" type="image/svg+xml" href="favicon.svg">
+<title>{{ title | safe }}</title>
+<meta name="description" content="{{ description | safe }}">
+{% if robotsNoindex %}<meta name="robots" content="noindex">
+{% endif %}<link rel="canonical" href="{{ canonical | safe }}">
+<meta property="og:title" content="{{ (ogTitle or title) | safe }}">
+<meta property="og:description" content="{{ (ogDescription or description) | safe }}">
+<meta property="og:type" content="{{ ogType or 'website' }}">
+{% if ogUrl %}<meta property="og:url" content="{{ ogUrl | safe }}">
+{% endif %}{% if ogImage %}<meta property="og:image" content="{{ ogImage | safe }}">
+{% endif %}<link rel="icon" type="image/svg+xml" href="favicon.svg">
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Italiana&family=Work+Sans:wght@400;500;600&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="src/styles/reset.css">
 <link rel="stylesheet" href="src/styles/premium.css">
-</head>
+{% if jsonld %}<script type="application/ld+json">
+{{ jsonld | trim | safe }}
+</script>
+{% endif %}</head>
 <body>
 <header class="site-header wrap">
   <a class="logo" href="index.html">FORMA</a>
   <nav aria-label="Головна навігація">
     <ul class="nav-list">
-      <li><a href="houses.html">Будинки</a></li>
-      <li><a href="commercial.html">Комерційні приміщення</a></li>
-      <li><a href="landscape.html">Ландшафтний дизайн</a></li>
-      <li><a href="interior.html">Інтер'єр</a></li>
-      <li><a href="blog.html">Блог</a></li>
+      {%- for item in nav %}
+      <li><a href="{{ item.href }}"{% if item.key == currentNav %} aria-current="page"{% endif %}>{{ item.label | safe }}</a></li>
+      {%- endfor %}
     </ul>
   </nav>
 </header>
 
 <main id="top">
-<section class="section wrap" style="text-align: center; padding-block: var(--space-6);">
-    <p class="kicker">Помилка 404</p>
-    <h1 style="font-family: var(--font-display); font-size: clamp(34px, 6vw, 64px); font-weight: 600; margin-bottom: var(--space-4);">Такої сторінки не існує</h1>
-    <p style="max-width: 48ch; margin-inline: auto; margin-bottom: var(--space-5); color: var(--color-muted);">Можливо, посилання застаріло або сторінку перенесли. Спробуйте почати з головної або обрати категорію нижче.</p>
-    <p><a href="index.html" class="plan-download">← На головну</a></p>
-  </section>
+{{ content | trim | safe }}
 </main>
 
 <footer class="site-footer wrap" id="contact">
@@ -69,5 +67,7 @@
     <a href="privacy.html">Політика конфіденційності</a>
   </div>
 </footer>
-</body>
+{% if extraBodyEnd %}{{ extraBodyEnd | safe }}
+{% endif %}{% if not noReveal %}<script src="src/scripts/scroll-reveal.js"></script>
+{% endif %}</body>
 </html>

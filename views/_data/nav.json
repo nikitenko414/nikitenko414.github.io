@@ -1,0 +1,7 @@
+[
+  { "key": "houses", "href": "houses.html", "label": "Будинки" },
+  { "key": "commercial", "href": "commercial.html", "label": "Комерційні приміщення" },
+  { "key": "landscape", "href": "landscape.html", "label": "Ландшафтний дизайн" },
+  { "key": "interior", "href": "interior.html", "label": "Інтер'єр" },
+  { "key": "blog", "href": "blog.html", "label": "Блог" }
+]

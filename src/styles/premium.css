@@ -1012,6 +1012,37 @@ a {
   background: var(--color-accent-hover);
 }
 
+.intake-submit[aria-disabled="true"] {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+.form-consent {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--space-2);
+  font-size: 13px;
+  color: var(--color-muted);
+  margin-bottom: var(--space-3);
+  cursor: pointer;
+}
+
+.form-consent input[type="checkbox"] {
+  margin-top: 3px;
+  accent-color: var(--color-accent-dark);
+}
+
+.form-consent a {
+  color: var(--color-accent-dark);
+  border-bottom: 1px solid var(--color-accent-dark);
+}
+
+.form-consent-light {
+  color: #d9cdb8;
+  flex-basis: 100%;
+  justify-content: center;
+}
+
 .intake-progress {
   display: flex;
   gap: var(--space-2);

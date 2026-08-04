@@ -1,60 +1,148 @@
-<!doctype html>
-<html lang="uk">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<title>FORMA — архітектурна студія</title>
-<meta name="description" content="FORMA проєктує простір, що промовляє тихо: житлові будинки, культурні центри та приватні вілли з увагою до світла й матеріалу.">
-<link rel="canonical" href="/">
-<meta property="og:title" content="FORMA — архітектурна студія">
-<meta property="og:description" content="Простір, що промовляє тихо.">
-<meta property="og:type" content="website">
-<meta property="og:url" content="https://nikitenko414.github.io/">
-<meta property="og:image" content="https://images.pexels.com/photos/32666364/pexels-photo-32666364.jpeg?auto=compress&cs=tinysrgb&fit=crop&w=1200&h=630">
-<link rel="icon" type="image/svg+xml" href="favicon.svg">
-<link rel="apple-touch-icon" href="apple-touch-icon.png">
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Italiana&family=Work+Sans:wght@400;500;600&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="src/styles/reset.css">
-<link rel="stylesheet" href="src/styles/premium.css">
-<script type="application/ld+json">
-{
-  "@context": "https://schema.org",
-  "@type": "Organization",
-  "name": "FORMA",
-  "url": "/",
-  "description": "Архітектурна студія: житлові та громадські простори.",
-  "@graph": [
-    {
-      "@type": "LocalBusiness",
-      "name": "FORMA",
-      "address": {
-        "@type": "PostalAddress",
-        "addressLocality": "Київ",
-        "addressCountry": "UA"
+---
+title: "FORMA — архітектурна студія"
+description: "FORMA проєктує простір, що промовляє тихо: житлові будинки, культурні центри та приватні вілли з увагою до світла й матеріалу."
+canonical: "/"
+ogDescription: "Простір, що промовляє тихо."
+ogType: "website"
+ogUrl: "https://nikitenko414.github.io/"
+ogImage: "https://images.pexels.com/photos/32666364/pexels-photo-32666364.jpeg?auto=compress&cs=tinysrgb&fit=crop&w=1200&h=630"
+permalink: "/index.html"
+layout: base.njk
+jsonld: |
+  {
+    "@context": "https://schema.org",
+    "@type": "Organization",
+    "name": "FORMA",
+    "url": "/",
+    "description": "Архітектурна студія: житлові та громадські простори.",
+    "@graph": [
+      {
+        "@type": "LocalBusiness",
+        "name": "FORMA",
+        "address": {
+          "@type": "PostalAddress",
+          "addressLocality": "Київ",
+          "addressCountry": "UA"
+        }
       }
+    ]
+  }
+extraBodyEnd: |
+  <script>
+  (function () {
+    var reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    var behavior = reduceMotion ? 'auto' : 'smooth';
+  
+    function wireCarousel(carouselId, prevId, nextId, step) {
+      var el = document.getElementById(carouselId);
+      var prev = document.getElementById(prevId);
+      var next = document.getElementById(nextId);
+      if (!el || !prev || !next) return;
+      prev.addEventListener('click', function () {
+        el.scrollBy({ left: -step, behavior: behavior });
+      });
+      next.addEventListener('click', function () {
+        el.scrollBy({ left: step, behavior: behavior });
+      });
     }
-  ]
-}
-</script>
-</head>
-<body>
-<header class="site-header wrap">
-  <a class="logo" href="index.html">FORMA</a>
-  <nav aria-label="Головна навігація">
-    <ul class="nav-list">
-      <li><a href="houses.html">Будинки</a></li>
-      <li><a href="commercial.html">Комерційні приміщення</a></li>
-      <li><a href="landscape.html">Ландшафтний дизайн</a></li>
-      <li><a href="interior.html">Інтер'єр</a></li>
-      <li><a href="blog.html">Блог</a></li>
-    </ul>
-  </nav>
-</header>
+  
+    wireCarousel('projects-carousel', 'projects-prev', 'projects-next', 300);
+    wireCarousel('journal-carousel', 'journal-prev', 'journal-next', 340);
+  
+    var journalEl = document.getElementById('journal-carousel');
+    var dotButtons = document.querySelectorAll('#journal-dots button');
+    dotButtons.forEach(function (dot, i) {
+      dot.addEventListener('click', function () {
+        var card = journalEl.children[i];
+        if (card) {
+          journalEl.scrollTo({ left: card.offsetLeft - journalEl.offsetLeft, behavior: behavior });
+        }
+        dotButtons.forEach(function (d) { d.removeAttribute('aria-current'); });
+        dot.setAttribute('aria-current', 'true');
+      });
+    });
+  
+    // "Почати проєкт" intake — progressive fieldset reveal, no backend: the
+    // final action is a real mailto: link pre-filled from the answers.
+    var intakeForm = document.getElementById('intake-form');
+    if (intakeForm) {
+      var state = {};
+      var intakeSteps = intakeForm.querySelectorAll('.intake-step');
+      var intakeDots = document.querySelectorAll('.intake-dot');
+  
+      var showIntakeStep = function (n) {
+        intakeSteps.forEach(function (s) { s.hidden = Number(s.dataset.step) !== n; });
+        intakeDots.forEach(function (d) { d.classList.toggle('active', Number(d.dataset.dot) <= n); });
+        var active = intakeForm.querySelector('.intake-step[data-step="' + n + '"]');
+        if (active) {
+          var firstControl = active.querySelector('button, input');
+          if (firstControl) firstControl.focus();
+        }
+      };
+  
+      intakeForm.querySelectorAll('.intake-option').forEach(function (btn) {
+        btn.addEventListener('click', function () {
+          state[btn.dataset.field] = btn.dataset.value;
+          var currentStep = Number(btn.closest('.intake-step').dataset.step);
+          showIntakeStep(currentStep + 1);
+        });
+      });
+  
+      var intakeNext = intakeForm.querySelector('.intake-next');
+      if (intakeNext) {
+        intakeNext.addEventListener('click', function () {
+          state.location = document.getElementById('intake-location').value;
+          showIntakeStep(Number(intakeNext.dataset.next));
+        });
+      }
+  
+      var intakeSubmit = document.getElementById('intake-submit');
+      var intakeConsent = document.getElementById('intake-consent');
+      var updateMailto = function () {
+        var name = document.getElementById('intake-name').value;
+        var contact = document.getElementById('intake-contact').value;
+        var subject = 'Заявка на проєкт: ' + (state.type || '');
+        var body = 'Тип проєкту: ' + (state.type || '') + '\nБюджет: ' + (state.budget || '') +
+          '\nЛокація: ' + (state.location || '') + '\nІм\'я: ' + name + '\nКонтакт: ' + contact;
+        intakeSubmit.href = 'mailto:studio@forma-arch.ua?subject=' + encodeURIComponent(subject) + '&body=' + encodeURIComponent(body);
+        var ready = name && contact && intakeConsent.checked;
+        intakeSubmit.setAttribute('aria-disabled', ready ? 'false' : 'true');
+      };
+      ['intake-name', 'intake-contact'].forEach(function (id) {
+        var el = document.getElementById(id);
+        if (el) el.addEventListener('input', updateMailto);
+      });
+      if (intakeConsent) intakeConsent.addEventListener('change', updateMailto);
+      intakeSubmit.addEventListener('click', function (e) {
+        if (intakeSubmit.getAttribute('aria-disabled') === 'true') {
+          e.preventDefault();
+          if (!intakeConsent.checked) intakeConsent.focus();
+        }
+      });
+      updateMailto();
+    }
 
-<main id="top">
-<section class="hero" aria-labelledby="hero-title">
+    // Newsletter — same no-backend pattern: submit builds a mailto: and
+    // navigates to it instead of silently doing nothing.
+    var newsletterForm = document.getElementById('newsletter-form');
+    if (newsletterForm) {
+      newsletterForm.addEventListener('submit', function (e) {
+        e.preventDefault();
+        var email = document.getElementById('newsletter-email').value;
+        var subject = 'Підписка на новини FORMA';
+        var body = 'Прошу підписати на розсилку новин студії: ' + email;
+        window.location.href = 'mailto:studio@forma-arch.ua?subject=' + encodeURIComponent(subject) + '&body=' + encodeURIComponent(body);
+      });
+    }
+  })();
+  </script>
+  
+  <div class="category-preview" id="category-preview" aria-hidden="true">
+    <img id="category-preview-img" src="" alt="" width="320" height="240" loading="lazy">
+  </div>
+  <script src="src/scripts/category-preview.js"></script>
+---
+  <section class="hero" aria-labelledby="hero-title">
     <div class="hero-media">
       <picture>
       <source type="image/avif" srcset="src/images/photos/32666364-640.avif 640w, src/images/photos/32666364-1280.avif 1280w, src/images/photos/32666364-1920.avif 1920w" sizes="100vw">
@@ -367,150 +455,3 @@
       </form>
     </div>
   </section>
-</main>
-
-<footer class="site-footer wrap" id="contact">
-  <div class="col">
-    <h4>FORMA</h4>
-    <p>Архітектурна студія<br>Київ, Україна</p>
-  </div>
-  <div class="col">
-    <h4>Контакти</h4>
-    <a href="mailto:studio@forma-arch.ua">studio@forma-arch.ua</a>
-    <a href="tel:+380440000000">+380 44 000 00 00</a>
-  </div>
-  <div class="col">
-    <h4>Соцмережі</h4>
-    <a href="#">Instagram</a>
-    <a href="#">Behance</a>
-  </div>
-  <div class="col">
-    <h4>Категорії</h4>
-    <a href="houses.html">Будинки</a>
-    <a href="commercial.html">Комерційні приміщення</a>
-    <a href="landscape.html">Ландшафтний дизайн</a>
-    <a href="interior.html">Інтер'єр</a>
-    <a href="blog.html">Блог</a>
-  </div>
-  <div class="col">
-    <h4>Правове</h4>
-    <a href="privacy.html">Політика конфіденційності</a>
-  </div>
-</footer>
-<script>
-(function () {
-  var reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-  var behavior = reduceMotion ? 'auto' : 'smooth';
-
-  function wireCarousel(carouselId, prevId, nextId, step) {
-    var el = document.getElementById(carouselId);
-    var prev = document.getElementById(prevId);
-    var next = document.getElementById(nextId);
-    if (!el || !prev || !next) return;
-    prev.addEventListener('click', function () {
-      el.scrollBy({ left: -step, behavior: behavior });
-    });
-    next.addEventListener('click', function () {
-      el.scrollBy({ left: step, behavior: behavior });
-    });
-  }
-
-  wireCarousel('projects-carousel', 'projects-prev', 'projects-next', 300);
-  wireCarousel('journal-carousel', 'journal-prev', 'journal-next', 340);
-
-  var journalEl = document.getElementById('journal-carousel');
-  var dotButtons = document.querySelectorAll('#journal-dots button');
-  dotButtons.forEach(function (dot, i) {
-    dot.addEventListener('click', function () {
-      var card = journalEl.children[i];
-      if (card) {
-        journalEl.scrollTo({ left: card.offsetLeft - journalEl.offsetLeft, behavior: behavior });
-      }
-      dotButtons.forEach(function (d) { d.removeAttribute('aria-current'); });
-      dot.setAttribute('aria-current', 'true');
-    });
-  });
-
-  // "Почати проєкт" intake — progressive fieldset reveal, no backend: the
-  // final action is a real mailto: link pre-filled from the answers.
-  var intakeForm = document.getElementById('intake-form');
-  if (intakeForm) {
-    var state = {};
-    var intakeSteps = intakeForm.querySelectorAll('.intake-step');
-    var intakeDots = document.querySelectorAll('.intake-dot');
-
-    var showIntakeStep = function (n) {
-      intakeSteps.forEach(function (s) { s.hidden = Number(s.dataset.step) !== n; });
-      intakeDots.forEach(function (d) { d.classList.toggle('active', Number(d.dataset.dot) <= n); });
-      var active = intakeForm.querySelector('.intake-step[data-step="' + n + '"]');
-      if (active) {
-        var firstControl = active.querySelector('button, input');
-        if (firstControl) firstControl.focus();
-      }
-    };
-
-    intakeForm.querySelectorAll('.intake-option').forEach(function (btn) {
-      btn.addEventListener('click', function () {
-        state[btn.dataset.field] = btn.dataset.value;
-        var currentStep = Number(btn.closest('.intake-step').dataset.step);
-        showIntakeStep(currentStep + 1);
-      });
-    });
-
-    var intakeNext = intakeForm.querySelector('.intake-next');
-    if (intakeNext) {
-      intakeNext.addEventListener('click', function () {
-        state.location = document.getElementById('intake-location').value;
-        showIntakeStep(Number(intakeNext.dataset.next));
-      });
-    }
-
-    var intakeSubmit = document.getElementById('intake-submit');
-    var intakeConsent = document.getElementById('intake-consent');
-    var updateMailto = function () {
-      var name = document.getElementById('intake-name').value;
-      var contact = document.getElementById('intake-contact').value;
-      var subject = 'Заявка на проєкт: ' + (state.type || '');
-      var body = 'Тип проєкту: ' + (state.type || '') + '\nБюджет: ' + (state.budget || '') +
-        '\nЛокація: ' + (state.location || '') + '\nІм\'я: ' + name + '\nКонтакт: ' + contact;
-      intakeSubmit.href = 'mailto:studio@forma-arch.ua?subject=' + encodeURIComponent(subject) + '&body=' + encodeURIComponent(body);
-      var ready = name && contact && intakeConsent.checked;
-      intakeSubmit.setAttribute('aria-disabled', ready ? 'false' : 'true');
-    };
-    ['intake-name', 'intake-contact'].forEach(function (id) {
-      var el = document.getElementById(id);
-      if (el) el.addEventListener('input', updateMailto);
-    });
-    if (intakeConsent) intakeConsent.addEventListener('change', updateMailto);
-    intakeSubmit.addEventListener('click', function (e) {
-      if (intakeSubmit.getAttribute('aria-disabled') === 'true') {
-        e.preventDefault();
-        if (!intakeConsent.checked) intakeConsent.focus();
-      }
-    });
-    updateMailto();
-  }
-
-  // Newsletter — same no-backend pattern: submit builds a mailto: and
-  // navigates to it instead of silently doing nothing.
-  var newsletterForm = document.getElementById('newsletter-form');
-  if (newsletterForm) {
-    newsletterForm.addEventListener('submit', function (e) {
-      e.preventDefault();
-      var email = document.getElementById('newsletter-email').value;
-      var subject = 'Підписка на новини FORMA';
-      var body = 'Прошу підписати на розсилку новин студії: ' + email;
-      window.location.href = 'mailto:studio@forma-arch.ua?subject=' + encodeURIComponent(subject) + '&body=' + encodeURIComponent(body);
-    });
-  }
-})();
-</script>
-
-<div class="category-preview" id="category-preview" aria-hidden="true">
-  <img id="category-preview-img" src="" alt="" width="320" height="240" loading="lazy">
-</div>
-<script src="src/scripts/category-preview.js"></script>
-
-<script src="src/scripts/scroll-reveal.js"></script>
-</body>
-</html>

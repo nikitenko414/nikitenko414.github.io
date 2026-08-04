@@ -1,0 +1,13 @@
+{
+  "name": "forma-site",
+  "private": true,
+  "description": "FORMA architecture studio static site — Eleventy templates build to plain HTML/CSS/JS at the repo root, served directly by GitHub Pages.",
+  "scripts": {
+    "build": "eleventy",
+    "watch": "eleventy --serve"
+  },
+  "devDependencies": {
+    "@11ty/eleventy": "^3.0.0",
+    "sharp": "^0.35.3"
+  }
+}

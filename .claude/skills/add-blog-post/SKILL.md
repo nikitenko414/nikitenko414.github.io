@@ -5,14 +5,19 @@ description: Add a new blog article to the FORMA architecture site (create the a
 
 # Adding a blog post to FORMA
 
-The site is static HTML (no CMS). Follow the pattern of the existing posts
-(`blog-natural-light.html`, `blog-materials.html`, `blog-design-questions.html`)
-exactly — same header/nav, footer, and CSS classes from `src/styles/premium.css`.
+The site builds with **Eleventy** (11ty): `views/*.njk` templates compile to
+the flat HTML files GitHub Pages serves (`npm run build`). Header/nav/footer
+live once in `views/_includes/base.njk` — never edit them per post. Follow
+the pattern of the existing posts (`views/blog-natural-light.njk`,
+`views/blog-materials.njk`, `views/blog-design-questions.njk`) exactly —
+same CSS classes from `src/styles/premium.css`.
 
 ## Steps
 
-1. **Slug & filename**: `blog-<english-slug>.html` in the project root, lowercase,
-   hyphenated (content is Ukrainian, filenames stay English like the rest of the site).
+1. **Slug & template**: copy an existing `views/blog-*.njk` file (e.g.
+   `blog-materials.njk`) to `views/blog-<english-slug>.njk` — lowercase,
+   hyphenated (content is Ukrainian, filenames stay English like the rest of
+   the site).
 
 2. **Cover image**:
    - **Real photo provided** (e.g. relayed from Telegram): drop the raw file
@@ -34,15 +39,15 @@ exactly — same header/nav, footer, and CSS classes from `src/styles/premium.cs
      - Size via query params: cover image `?auto=compress&cs=tinysrgb&fit=crop&w=1600&h=900`,
        blog-grid thumbnail `...&w=1000&h=750`.
 
-3. **Copy an existing post file** as the starting point (`blog-materials.html` is
-   a good template) and update:
-   - `<title>` — real title, ≤ 60 characters
-   - `<meta name="description">` — ≤ 155 characters
-   - `<link rel="canonical">` → `/blog-<slug>.html`
-   - OG title/description/image
-   - `<script type="application/ld+json">` — `BlogPosting`, real `headline`,
+3. **Fill the front matter and body** and update:
+   - `title` — real title, ≤ 60 characters
+   - `description` — ≤ 155 characters
+   - `canonical` → `/blog-<slug>.html`
+   - `ogTitle`/`ogDescription`/`ogImage`
+   - `jsonld` (`|`-block YAML scalar) — `BlogPosting`, real `headline`,
      `datePublished` (use today's date unless told otherwise), `image`
-   - Nav: `blog.html` link keeps `aria-current="page"` (it's still a blog page)
+   - `currentNav: blog` — keeps `blog.html` marked `aria-current="page"` in
+     the shared nav (it's still a blog page)
    - `.kicker` label in the article header (short category word, e.g. "Проєктування")
    - `.article-header h1`, `.article-meta` (date + "FORMA")
    - `.article-cover img` — real alt text describing the temp photo, mark it as
@@ -52,18 +57,22 @@ exactly — same header/nav, footer, and CSS classes from `src/styles/premium.cs
      Real substance, not keyword stuffing — matches the tone of the existing
      3 posts (concrete, a little opinionated, grounded in practice).
 
-4. **Add a card to `blog.html`**: new `<article class="journal-card">` in
-   `.blog-grid`, same markup shape as the existing three (image + `<h3>` +
-   one-line dek + `Читати →` link). Newest post first.
+4. **Add a card to `views/blog.njk`**: new `<article class="journal-card">`
+   in `.blog-grid`, same markup shape as the existing three (image + `<h3>`
+   + one-line dek + `Читати →` link). Newest post first.
 
-5. **Optional — feature it on the homepage**: `index.html` has a 3-card
-   `#journal` carousel ("Нотатки бюро"). If the new post should be featured,
-   swap it in for the oldest of the current three.
+5. **Optional — feature it on the homepage**: `views/index.njk` has a
+   3-card `#journal` carousel ("Нотатки бюро"). If the new post should be
+   featured, swap it in for the oldest of the current three.
 
-6. **Add to `sitemap.xml`**: a `<url>` entry with `priority 0.6` and
-   `lastmod` set to today's date — same shape as the other `blog-*` entries.
+6. **Add to `sitemap.xml`** (hand-edited, outside the 11ty build): a `<url>`
+   entry with `priority 0.6` and `lastmod` set to today's date — same shape
+   as the other `blog-*` entries.
 
-7. **Verify before reporting done**:
+7. **Build**: `npm run build`, commit the `.njk` source and the regenerated
+   `.html` together.
+
+8. **Verify before reporting done**:
    - Use the local `static-site` preview server (`preview_start` with the
      `.claude/launch.json` config already in this project) — never `file://`
      navigation for re-checking edits, it serves a cached static snapshot from

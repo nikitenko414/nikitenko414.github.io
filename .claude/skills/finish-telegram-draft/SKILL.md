@@ -48,18 +48,21 @@ want a human check before anything goes live).
    `node scripts/process-local-images.js <slug>` as usual.
 
 6. **Author the page**: follow `add-project` or `add-blog-post` from their
-   "fill the template" step onward — SEO tags, category listing card,
-   `sitemap.xml` entry, everything those skills already cover.
+   "fill the template" step onward — copy a `views/*.njk` template, SEO
+   front matter, category listing card, `sitemap.xml` entry, everything
+   those skills already cover. Run `npm run build` before moving on (the
+   site builds with Eleventy now — see either skill for details).
 
 7. **Clean up the inbox item**: `git rm -r telegram-inbox/<date>-<key>` once
    its content has been moved into the real page — don't leave processed
    raw dumps sitting in the branch.
 
 8. **Commit and push to `telegram-intake`** (not a new branch — the Action
-   reuses this branch, so staying on it keeps history in one PR). Do not
-   run `gh pr merge`. If the PR is still marked draft, `gh pr ready` is fine
-   (just flips the draft flag so it shows up as awaiting review) — but stop
-   there.
+   reuses this branch, so staying on it keeps history in one PR). Commit
+   both the `.njk` source and the regenerated `.html` output together. Do
+   not run `gh pr merge`. If the PR is still marked draft, `gh pr ready` is
+   fine (just flips the draft flag so it shows up as awaiting review) — but
+   stop there.
 
 9. **Verify** with `preview_start` (`static-site` config) + `get_page_text`
    on the new page, same as the other two skills.

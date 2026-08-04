@@ -1,59 +1,48 @@
-<!doctype html>
-<html lang="uk">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Будинки — FORMA</title>
-<meta name="description" content="Приватні житлові будинки та вілли від архітектурної студії FORMA: від концепції до передачі ключів.">
-<link rel="canonical" href="/houses.html">
-<meta property="og:title" content="Будинки — FORMA">
-<meta property="og:description" content="Приватні житлові будинки та вілли від FORMA.">
-<meta property="og:type" content="website">
-<meta property="og:url" content="https://nikitenko414.github.io/houses.html">
-<meta property="og:image" content="https://images.pexels.com/photos/32666364/pexels-photo-32666364.jpeg?auto=compress&cs=tinysrgb&fit=crop&w=1200&h=630">
-<link rel="icon" type="image/svg+xml" href="favicon.svg">
-<link rel="apple-touch-icon" href="apple-touch-icon.png">
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Italiana&family=Work+Sans:wght@400;500;600&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="src/styles/reset.css">
-<link rel="stylesheet" href="src/styles/premium.css">
-<script type="application/ld+json">
-{
-  "@context": "https://schema.org",
-  "@type": "Organization",
-  "name": "FORMA",
-  "url": "/",
-  "@graph": [
-    {
-      "@type": "LocalBusiness",
-      "name": "FORMA",
-      "address": {
-        "@type": "PostalAddress",
-        "addressLocality": "Київ",
-        "addressCountry": "UA"
+---
+title: "Будинки — FORMA"
+description: "Приватні житлові будинки та вілли від архітектурної студії FORMA: від концепції до передачі ключів."
+canonical: "/houses.html"
+ogDescription: "Приватні житлові будинки та вілли від FORMA."
+ogType: "website"
+ogUrl: "https://nikitenko414.github.io/houses.html"
+ogImage: "https://images.pexels.com/photos/32666364/pexels-photo-32666364.jpeg?auto=compress&cs=tinysrgb&fit=crop&w=1200&h=630"
+currentNav: "houses"
+permalink: "/houses.html"
+layout: base.njk
+jsonld: |
+  {
+    "@context": "https://schema.org",
+    "@type": "Organization",
+    "name": "FORMA",
+    "url": "/",
+    "@graph": [
+      {
+        "@type": "LocalBusiness",
+        "name": "FORMA",
+        "address": {
+          "@type": "PostalAddress",
+          "addressLocality": "Київ",
+          "addressCountry": "UA"
+        }
       }
+    ]
+  }
+extraBodyEnd: |
+  <script>
+  (function () {
+    var reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    var behavior = reduceMotion ? 'auto' : 'smooth';
+    var el = document.getElementById('projects-carousel');
+    var prev = document.getElementById('projects-prev');
+    var next = document.getElementById('projects-next');
+    if (el && prev && next) {
+      prev.addEventListener('click', function () { el.scrollBy({ left: -300, behavior: behavior }); });
+      next.addEventListener('click', function () { el.scrollBy({ left: 300, behavior: behavior }); });
     }
-  ]
-}
-</script>
-</head>
-<body>
-<header class="site-header wrap">
-  <a class="logo" href="index.html">FORMA</a>
-  <nav aria-label="Головна навігація">
-    <ul class="nav-list">
-      <li><a href="houses.html" aria-current="page">Будинки</a></li>
-      <li><a href="commercial.html">Комерційні приміщення</a></li>
-      <li><a href="landscape.html">Ландшафтний дизайн</a></li>
-      <li><a href="interior.html">Інтер'єр</a></li>
-      <li><a href="blog.html">Блог</a></li>
-    </ul>
-  </nav>
-</header>
-
-<main id="top">
-<section class="hero hero-compact" aria-labelledby="hero-title">
+  })();
+  </script>
+---
+  <section class="hero hero-compact" aria-labelledby="hero-title">
     <div class="hero-media">
       <picture>
       <source type="image/avif" srcset="src/images/photos/32666364-640.avif 640w, src/images/photos/32666364-1280.avif 1280w, src/images/photos/32666364-1920.avif 1920w" sizes="100vw">
@@ -136,50 +125,3 @@
       </div>
     </div>
   </section>
-</main>
-
-<footer class="site-footer wrap" id="contact">
-  <div class="col">
-    <h4>FORMA</h4>
-    <p>Архітектурна студія<br>Київ, Україна</p>
-  </div>
-  <div class="col">
-    <h4>Контакти</h4>
-    <a href="mailto:studio@forma-arch.ua">studio@forma-arch.ua</a>
-    <a href="tel:+380440000000">+380 44 000 00 00</a>
-  </div>
-  <div class="col">
-    <h4>Соцмережі</h4>
-    <a href="#">Instagram</a>
-    <a href="#">Behance</a>
-  </div>
-  <div class="col">
-    <h4>Категорії</h4>
-    <a href="houses.html">Будинки</a>
-    <a href="commercial.html">Комерційні приміщення</a>
-    <a href="landscape.html">Ландшафтний дизайн</a>
-    <a href="interior.html">Інтер'єр</a>
-    <a href="blog.html">Блог</a>
-  </div>
-  <div class="col">
-    <h4>Правове</h4>
-    <a href="privacy.html">Політика конфіденційності</a>
-  </div>
-</footer>
-<script>
-(function () {
-  var reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-  var behavior = reduceMotion ? 'auto' : 'smooth';
-  var el = document.getElementById('projects-carousel');
-  var prev = document.getElementById('projects-prev');
-  var next = document.getElementById('projects-next');
-  if (el && prev && next) {
-    prev.addEventListener('click', function () { el.scrollBy({ left: -300, behavior: behavior }); });
-    next.addEventListener('click', function () { el.scrollBy({ left: 300, behavior: behavior }); });
-  }
-})();
-</script>
-
-<script src="src/scripts/scroll-reveal.js"></script>
-</body>
-</html>
