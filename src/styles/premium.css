@@ -95,7 +95,7 @@ a {
   width: 100%;
   height: 100%;
   object-fit: cover;
-  filter: contrast(1.08) brightness(0.94) saturate(1.1);
+  filter: grayscale(0.15) contrast(1.06) brightness(0.94) saturate(0.95);
 }
 
 .hero::after {
@@ -246,7 +246,7 @@ a {
   aspect-ratio: 4 / 3;
   object-fit: cover;
   border-radius: 6px;
-  filter: contrast(1.1) saturate(1.1);
+  filter: grayscale(0.15) contrast(1.08) saturate(0.95);
 }
 
 @media (max-width: 720px) {
@@ -321,7 +321,7 @@ a {
   aspect-ratio: 16 / 9;
   object-fit: cover;
   border-radius: 4px;
-  filter: contrast(1.08) saturate(1.1);
+  filter: grayscale(0.15) contrast(1.06) saturate(0.95);
 }
 
 .article-body {
@@ -372,7 +372,7 @@ a {
   aspect-ratio: 4 / 3;
   object-fit: cover;
   border-radius: 4px;
-  filter: contrast(1.08) saturate(1.1);
+  filter: grayscale(0.15) contrast(1.06) saturate(0.95);
 }
 
 .project-plans {
@@ -655,7 +655,7 @@ a {
   width: 100%;
   aspect-ratio: 4 / 3;
   object-fit: cover;
-  filter: contrast(1.08) saturate(1.1);
+  filter: grayscale(0.15) contrast(1.06) saturate(0.95);
 }
 
 .play-badge {
@@ -708,13 +708,13 @@ a {
   width: 100%;
   aspect-ratio: 4 / 5;
   object-fit: cover;
-  filter: contrast(1.08) saturate(1.1);
+  filter: grayscale(0.15) contrast(1.06) saturate(0.95);
   transition: transform 400ms ease, filter 400ms ease;
 }
 
 .project-card a:hover img,
 .project-card a:focus-visible img {
-  filter: contrast(1.12) saturate(1.25);
+  filter: grayscale(0) contrast(1.1) saturate(1.05);
   transform: scale(1.04);
 }
 
@@ -790,7 +790,7 @@ a {
   width: 100%;
   aspect-ratio: 4 / 3;
   object-fit: cover;
-  filter: contrast(1.08) saturate(1.1);
+  filter: grayscale(0.15) contrast(1.06) saturate(0.95);
 }
 
 .journal-card h3 {
