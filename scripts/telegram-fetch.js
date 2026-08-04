@@ -120,7 +120,11 @@ async function main() {
     }
     const group = groups.get(groupKey);
     if (message.caption) group.texts.push(message.caption);
-    if (message.text) group.texts.push(message.text);
+    // Bare bot commands (/start, /help, ...) aren't content — skip them so
+    // a colleague tapping "Start" doesn't create a junk inbox entry.
+    if (message.text && !/^\/\w+(@\w+)?\s*$/.test(message.text.trim())) {
+      group.texts.push(message.text);
+    }
 
     const media = pickMedia(message);
     if (media) group.media.push(media);
