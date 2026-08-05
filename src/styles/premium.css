@@ -1151,13 +1151,13 @@ main.has-hero-page {
 /* Scroll-reveal (transform/opacity only; instant when reduced motion is on) */
 .reveal-on-scroll {
   opacity: 0;
-  transform: translateY(16px);
+  transform: translateY(28px) scale(0.97);
   transition: opacity 400ms ease, transform 400ms ease;
 }
 
 .reveal-on-scroll.is-visible {
   opacity: 1;
-  transform: translateY(0);
+  transform: translateY(0) scale(1);
 }
 
 @media (prefers-reduced-motion: reduce) {

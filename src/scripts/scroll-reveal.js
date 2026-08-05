@@ -42,7 +42,7 @@
   targets.forEach(function (el) {
     el.classList.add('reveal-on-scroll');
     var idx = Math.min(Math.max(staggerIndex(el), 0), 5);
-    if (idx > 0) el.style.transitionDelay = (idx * 70) + 'ms';
+    if (idx > 0) el.style.transitionDelay = (idx * 110) + 'ms';
     observer.observe(el);
   });
 })();
