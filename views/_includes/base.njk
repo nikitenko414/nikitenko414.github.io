@@ -36,7 +36,7 @@
   </nav>
 </header>
 
-<main id="top">
+<main id="top"{% if hasHero %} class="has-hero-page"{% endif %}>
 {{ content | trim | safe }}
 </main>
 
@@ -69,7 +69,8 @@
   </div>
 </footer>
 {% if extraBodyEnd %}{{ extraBodyEnd | safe }}
-{% endif %}{% if not noReveal %}<script src="src/scripts/scroll-reveal.js"></script>
+{% endif %}<script src="src/scripts/header-scroll.js"></script>
+{% if not noReveal %}<script src="src/scripts/scroll-reveal.js"></script>
 <script src="src/scripts/reading-progress.js"></script>
 <script src="src/scripts/parallax-hero.js"></script>
 {% endif %}</body>

@@ -44,8 +44,11 @@ a {
 
 /* Header */
 .site-header {
-  position: relative;
-  z-index: 10;
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 20;
   display: flex;
   flex-wrap: wrap;
   align-items: center;
@@ -54,6 +57,30 @@ a {
   padding-block: var(--space-4);
   background: var(--color-bg);
   border-bottom: 1px solid var(--color-line);
+  transition: background 300ms ease, border-color 300ms ease, backdrop-filter 300ms ease;
+}
+
+/* Set by header-scroll.js only on pages whose main starts with a hero photo
+   — header starts fully transparent so the image runs edge-to-edge behind
+   it, then gains a background once you scroll past it (.scrolled). */
+.site-header.site-header-overlay {
+  background: transparent;
+  border-bottom-color: transparent;
+}
+
+.site-header.scrolled {
+  background: rgba(11, 10, 9, 0.88);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border-bottom-color: var(--color-line);
+}
+
+main {
+  padding-top: var(--header-height, 88px);
+}
+
+main.has-hero-page {
+  padding-top: 0;
 }
 
 .logo {
@@ -103,7 +130,10 @@ a {
   position: absolute;
   inset: 0;
   z-index: 1;
-  background: linear-gradient(0deg, rgba(11, 10, 9, 0.75) 0%, rgba(11, 10, 9, 0.15) 55%, rgba(11, 10, 9, 0.35) 100%);
+  /* 100% (top) bumped up from the base text-legibility gradient — this end
+     now also has to keep the overlaid transparent header's nav links
+     readable against whatever the photo looks like up there. */
+  background: linear-gradient(0deg, rgba(11, 10, 9, 0.75) 0%, rgba(11, 10, 9, 0.15) 55%, rgba(11, 10, 9, 0.55) 100%);
 }
 
 .hero-content {
