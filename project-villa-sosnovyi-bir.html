@@ -20,15 +20,46 @@
 <script type="application/ld+json">
 {
   "@context": "https://schema.org",
-  "@type": "ImageObject",
-  "name": "Вілла «Сосновий Бір»",
-  "description": "Приватна вілла в Бучі серед соснового лісу.",
-  "contentUrl": "https://images.pexels.com/photos/15422346/pexels-photo-15422346.jpeg",
-  "creator": { "@type": "Organization", "name": "FORMA" }
+  "@graph": [
+    {
+      "@type": "ImageObject",
+      "name": "Вілла «Сосновий Бір»",
+      "description": "Приватна вілла в Бучі серед соснового лісу.",
+      "contentUrl": "https://images.pexels.com/photos/15422346/pexels-photo-15422346.jpeg",
+      "creator": {
+        "@type": "Organization",
+        "name": "FORMA"
+      }
+    },
+    {
+      "@type": "BreadcrumbList",
+      "itemListElement": [
+        {
+          "@type": "ListItem",
+          "position": 1,
+          "name": "Головна",
+          "item": "https://nikitenko414.github.io/"
+        },
+        {
+          "@type": "ListItem",
+          "position": 2,
+          "name": "Будинки",
+          "item": "https://nikitenko414.github.io/houses.html"
+        },
+        {
+          "@type": "ListItem",
+          "position": 3,
+          "name": "Вілла «Сосновий Бір»",
+          "item": "https://nikitenko414.github.io/project-villa-sosnovyi-bir.html"
+        }
+      ]
+    }
+  ]
 }
 </script>
 </head>
 <body>
+<a class="skip-link" href="#top">Перейти до вмісту</a>
 <div class="reading-progress" aria-hidden="true"><div class="reading-progress-bar"></div></div>
 <header class="site-header wrap">
   <a class="logo" href="index.html">FORMA</a>
@@ -43,9 +74,15 @@
   </nav>
 </header>
 
-<main id="top">
+<main id="top" tabindex="-1">
 <article class="section wrap">
-    <a class="back-link" href="houses.html">← Будинки</a>
+    <nav class="breadcrumbs" aria-label="Хлібні крихти">
+      <ol>
+        <li><a href="index.html">Головна</a></li>
+        <li><a href="houses.html">Будинки</a></li>
+        <li aria-current="page">Вілла «Сосновий Бір»</li>
+      </ol>
+    </nav>
     <header class="article-header">
       <p class="kicker">Проєкт — Буча, 2020</p>
       <h1>Вілла «Сосновий Бір»</h1>
@@ -146,7 +183,9 @@
     <a href="privacy.html">Політика конфіденційності</a>
   </div>
 </footer>
+<button type="button" class="back-to-top" aria-label="Нагору">↑</button>
 <script src="src/scripts/header-scroll.js"></script>
+<script src="src/scripts/back-to-top.js"></script>
 <script src="src/scripts/scroll-reveal.js"></script>
 <script src="src/scripts/reading-progress.js"></script>
 <script src="src/scripts/parallax-hero.js"></script>

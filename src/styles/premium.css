@@ -1,3 +1,14 @@
+/* Native cross-document View Transitions: a soft cross-fade between pages
+   instead of the default hard cut. Pure progressive enhancement — browsers
+   without support (or this rule stripped) just keep today's instant swap,
+   no JS, nothing to fall back to. Scoped to prefers-reduced-motion:
+   no-preference so it never fires for users who asked to avoid motion. */
+@media (prefers-reduced-motion: no-preference) {
+  @view-transition {
+    navigation: auto;
+  }
+}
+
 /* Self-hosted fonts: latin + cyrillic subsets only (the site is Ukrainian,
    with occasional Latin brand/UI text — no need for latin-ext/vietnamese/
    greek). Both are variable fonts, so one file per subset per style covers
@@ -83,6 +94,33 @@ body {
   font-family: var(--font-body);
 }
 
+/* Skip-to-content: off-screen until keyboard focus, then jumps above
+   everything (incl. the fixed header) so keyboard users don't have to
+   tab through the full nav on every page. */
+.skip-link {
+  position: fixed;
+  top: var(--space-2);
+  left: var(--space-2);
+  z-index: 100;
+  background: var(--color-accent);
+  color: var(--color-text);
+  padding: var(--space-2) var(--space-3);
+  border-radius: 2px;
+  font-size: 14px;
+  font-weight: 500;
+  text-decoration: none;
+  transform: translateY(-150%);
+  opacity: 0;
+  transition: transform 200ms ease, opacity 200ms ease;
+}
+
+.skip-link:focus {
+  transform: translateY(0);
+  opacity: 1;
+  outline: 2px solid var(--color-focus);
+  outline-offset: 2px;
+}
+
 .wrap {
   max-width: 1240px;
   margin-inline: auto;
@@ -155,9 +193,33 @@ main.has-hero-page {
   letter-spacing: 0.02em;
 }
 
+.nav-list a {
+  position: relative;
+  padding-bottom: 2px;
+  transition: color 220ms ease;
+}
+
+.nav-list a::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  width: 100%;
+  height: 1px;
+  background: var(--color-accent-dark);
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform 220ms ease;
+}
+
 .nav-list a:hover,
 .nav-list a:focus-visible {
   color: var(--color-accent-dark);
+}
+
+.nav-list a:hover::after,
+.nav-list a:focus-visible::after {
+  transform: scaleX(1);
 }
 
 /* Hero */
@@ -233,11 +295,13 @@ main.has-hero-page {
   font-weight: 600;
   padding: var(--space-3) var(--space-4);
   border-radius: 2px;
+  transition: background 220ms ease, transform 220ms ease;
 }
 
 .cta:hover,
 .cta:focus-visible {
   background: var(--color-accent-hover);
+  transform: translateY(-2px);
 }
 
 .cta-outline {
@@ -246,6 +310,14 @@ main.has-hero-page {
   padding: var(--space-2) var(--space-4);
   font-size: 14px;
   border-radius: 2px;
+  transition: transform 220ms ease, border-color 220ms ease, color 220ms ease;
+}
+
+.cta-outline:hover,
+.cta-outline:focus-visible {
+  transform: translateY(-2px);
+  border-color: var(--color-accent-dark);
+  color: var(--color-accent-dark);
 }
 
 .hero-compact {
@@ -645,6 +717,74 @@ main.has-hero-page {
   font-size: 14px;
   font-weight: 600;
   color: var(--color-accent-dark);
+  transition: transform 220ms ease, opacity 220ms ease;
+}
+
+.back-link:hover,
+.back-link:focus-visible {
+  transform: translateX(-4px);
+  opacity: 0.8;
+}
+
+/* Breadcrumbs (project pages) */
+.breadcrumbs {
+  margin-bottom: var(--space-4);
+}
+
+.breadcrumbs ol {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-1);
+  list-style: none;
+  font-size: 13px;
+  color: var(--color-muted);
+}
+
+.breadcrumbs li {
+  display: flex;
+  align-items: center;
+  gap: var(--space-1);
+}
+
+.breadcrumbs li:not(:last-child)::after {
+  content: '/';
+  color: var(--color-line);
+  margin-left: var(--space-1);
+}
+
+.breadcrumbs a {
+  position: relative;
+  color: var(--color-muted);
+  transition: color 220ms ease;
+}
+
+.breadcrumbs a::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  bottom: -1px;
+  width: 100%;
+  height: 1px;
+  background: var(--color-accent-dark);
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform 220ms ease;
+}
+
+.breadcrumbs a:hover,
+.breadcrumbs a:focus-visible {
+  color: var(--color-accent-dark);
+}
+
+.breadcrumbs a:hover::after,
+.breadcrumbs a:focus-visible::after {
+  transform: scaleX(1);
+}
+
+.breadcrumbs li[aria-current="page"] {
+  color: var(--color-text);
+  font-weight: 500;
 }
 
 .nav-list a[aria-current="page"] {
@@ -1214,11 +1354,77 @@ main.has-hero-page {
 }
 
 .site-footer a {
+  position: relative;
   display: block;
+  width: max-content;
+  max-width: 100%;
   margin-bottom: var(--space-1);
+  transition: color 220ms ease;
+}
+
+.site-footer a::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  bottom: -1px;
+  width: 100%;
+  height: 1px;
+  background: var(--color-accent-dark);
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform 220ms ease;
 }
 
 .site-footer a:hover,
 .site-footer a:focus-visible {
   color: var(--color-accent-dark);
+}
+
+.site-footer a:hover::after,
+.site-footer a:focus-visible::after {
+  transform: scaleX(1);
+}
+
+/* Back-to-top: hidden until the page has scrolled past one viewport,
+   then fades/lifts in. transform+opacity only, matches carousel-controls
+   circular-button styling for visual consistency. */
+.back-to-top {
+  position: fixed;
+  right: var(--space-4);
+  bottom: var(--space-4);
+  z-index: 15;
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  border: 1px solid var(--color-line);
+  background: var(--color-bg);
+  color: var(--color-text);
+  font-size: 20px;
+  line-height: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  transform: translateY(12px);
+  pointer-events: none;
+  transition: opacity 240ms ease, transform 240ms ease, background 220ms ease, border-color 220ms ease;
+}
+
+.back-to-top.is-visible {
+  opacity: 1;
+  transform: translateY(0);
+  pointer-events: auto;
+}
+
+.back-to-top:hover,
+.back-to-top:focus-visible {
+  background: var(--color-accent);
+  color: #fff;
+  border-color: var(--color-accent);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .back-to-top {
+    transition: opacity 240ms ease;
+  }
 }

@@ -31,6 +31,7 @@
 </script>
 </head>
 <body>
+<a class="skip-link" href="#top">Перейти до вмісту</a>
 <div class="reading-progress" aria-hidden="true"><div class="reading-progress-bar"></div></div>
 <header class="site-header wrap">
   <a class="logo" href="index.html">FORMA</a>
@@ -45,7 +46,7 @@
   </nav>
 </header>
 
-<main id="top">
+<main id="top" tabindex="-1">
 <section class="section" aria-labelledby="blog-heading">
     <div class="wrap category-intro">
       <p class="kicker">Блог</p>
@@ -132,7 +133,9 @@
     <a href="privacy.html">Політика конфіденційності</a>
   </div>
 </footer>
+<button type="button" class="back-to-top" aria-label="Нагору">↑</button>
 <script src="src/scripts/header-scroll.js"></script>
+<script src="src/scripts/back-to-top.js"></script>
 <script src="src/scripts/scroll-reveal.js"></script>
 <script src="src/scripts/reading-progress.js"></script>
 <script src="src/scripts/parallax-hero.js"></script>

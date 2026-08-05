@@ -11,15 +11,51 @@ layout: base.njk
 jsonld: |
   {
     "@context": "https://schema.org",
-    "@type": "ImageObject",
-    "name": "Дім на Дніпрі",
-    "description": "Житловий будинок у Києві з панорамним виходом до води.",
-    "contentUrl": "https://images.pexels.com/photos/1974596/pexels-photo-1974596.jpeg",
-    "creator": { "@type": "Organization", "name": "FORMA" }
+    "@graph": [
+      {
+        "@type": "ImageObject",
+        "name": "Дім на Дніпрі",
+        "description": "Житловий будинок у Києві з панорамним виходом до води.",
+        "contentUrl": "https://images.pexels.com/photos/1974596/pexels-photo-1974596.jpeg",
+        "creator": {
+          "@type": "Organization",
+          "name": "FORMA"
+        }
+      },
+      {
+        "@type": "BreadcrumbList",
+        "itemListElement": [
+          {
+            "@type": "ListItem",
+            "position": 1,
+            "name": "Головна",
+            "item": "https://nikitenko414.github.io/"
+          },
+          {
+            "@type": "ListItem",
+            "position": 2,
+            "name": "Будинки",
+            "item": "https://nikitenko414.github.io/houses.html"
+          },
+          {
+            "@type": "ListItem",
+            "position": 3,
+            "name": "Дім на Дніпрі",
+            "item": "https://nikitenko414.github.io/project-dim-na-dnipri.html"
+          }
+        ]
+      }
+    ]
   }
 ---
   <article class="section wrap">
-    <a class="back-link" href="houses.html">← Будинки</a>
+    <nav class="breadcrumbs" aria-label="Хлібні крихти">
+      <ol>
+        <li><a href="index.html">Головна</a></li>
+        <li><a href="houses.html">Будинки</a></li>
+        <li aria-current="page">Дім на Дніпрі</li>
+      </ol>
+    </nav>
     <header class="article-header">
       <p class="kicker">Проєкт — Київ, 2023</p>
       <h1>Дім на Дніпрі</h1>
