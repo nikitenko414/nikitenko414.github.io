@@ -185,6 +185,19 @@ main.has-hero-page {
   font-style: italic;
 }
 
+/* Temporary: testing a generated logo image on the homepage only, swapped
+   in/out via the logoTest front-matter flag — not a permanent header
+   treatment yet. */
+.logo-image-test {
+  display: block;
+  line-height: 0;
+}
+
+.logo-image-test img {
+  height: 76px;
+  width: auto;
+}
+
 .nav-list {
   display: flex;
   flex-wrap: wrap;
