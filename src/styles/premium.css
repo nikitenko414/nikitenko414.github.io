@@ -211,24 +211,20 @@ main.has-hero-page {
   padding-top: 0;
 }
 
-.logo {
-  font-family: var(--font-display);
-  font-size: 26px;
-  font-weight: 600;
-  font-style: italic;
-}
-
-/* Temporary: testing a generated logo image on the homepage only, swapped
-   in/out via the logoTest front-matter flag — not a permanent header
-   treatment yet. */
-.logo-image-test {
+.logo-mark {
   display: block;
   line-height: 0;
 }
 
-.logo-image-test img {
+.logo-mark img {
   height: 76px;
   width: auto;
+}
+
+@media (max-width: 640px) {
+  .logo-mark img {
+    height: 52px;
+  }
 }
 
 .nav-list {
