@@ -5,8 +5,11 @@
 // 2. Marks the header transparent-overlay only on pages whose <main> starts
 //    with a hero photo (main.has-hero-page, set via template front matter)
 //    — everywhere else it keeps its normal solid background from the start.
-// 3. Toggles .scrolled once you scroll past ~40px, giving it a blurred
-//    background so nav stays legible over whatever content is behind it.
+// 3. On overlay pages, sets --scroll-progress (0 → 1) on every scroll frame
+//    as you scroll through the first FADE_DISTANCE px, so the header's
+//    background/blur/border-color fade in continuously with scroll position
+//    (see .site-header-overlay in premium.css) instead of snapping in at a
+//    fixed point — that hard cut is what read as jarring before.
 (function () {
   var header = document.querySelector('.site-header');
   if (!header) return;
@@ -17,13 +20,25 @@
   setHeaderHeight();
   window.addEventListener('resize', setHeaderHeight);
 
-  if (document.querySelector('main.has-hero-page')) {
-    header.classList.add('site-header-overlay');
+  var isOverlay = !!document.querySelector('main.has-hero-page');
+  if (!isOverlay) return;
+  header.classList.add('site-header-overlay');
+
+  var FADE_DISTANCE = 160;
+  var ticking = false;
+
+  function updateProgress() {
+    var progress = Math.min(1, Math.max(0, window.scrollY / FADE_DISTANCE));
+    header.style.setProperty('--scroll-progress', progress);
+    ticking = false;
   }
 
   function onScroll() {
-    header.classList.toggle('scrolled', window.scrollY > 40);
+    if (ticking) return;
+    ticking = true;
+    window.requestAnimationFrame(updateProgress);
   }
+
   window.addEventListener('scroll', onScroll, { passive: true });
-  onScroll();
+  updateProgress();
 })();

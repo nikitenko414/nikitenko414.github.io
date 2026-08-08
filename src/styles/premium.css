@@ -152,22 +152,20 @@ a {
   padding-block: var(--space-4);
   background: var(--color-bg);
   border-bottom: 1px solid var(--color-line);
-  transition: background 300ms ease, border-color 300ms ease, backdrop-filter 300ms ease;
 }
 
 /* Set by header-scroll.js only on pages whose main starts with a hero photo
    — header starts fully transparent so the image runs edge-to-edge behind
-   it, then gains a background once you scroll past it (.scrolled). */
+   it. --scroll-progress (0 → 1) is updated on every scroll frame, so the
+   background/blur/border fade in continuously with scroll position instead
+   of snapping in at a fixed threshold — deliberately no CSS `transition`
+   here, since animating a value that's already being rewritten every frame
+   just makes it lag behind the scroll instead of looking smoother. */
 .site-header.site-header-overlay {
-  background: transparent;
-  border-bottom-color: transparent;
-}
-
-.site-header.scrolled {
-  background: rgba(11, 10, 9, 0.88);
-  backdrop-filter: blur(10px);
-  -webkit-backdrop-filter: blur(10px);
-  border-bottom-color: var(--color-line);
+  background: rgba(11, 10, 9, calc(var(--scroll-progress, 0) * 0.88));
+  backdrop-filter: blur(calc(var(--scroll-progress, 0) * 10px));
+  -webkit-backdrop-filter: blur(calc(var(--scroll-progress, 0) * 10px));
+  border-bottom-color: rgba(107, 99, 85, var(--scroll-progress, 0));
 }
 
 main {
