@@ -29,7 +29,7 @@
   {% if logoTest %}<a class="logo logo-image-test" href="index.html">
     <picture>
       <source type="image/webp" srcset="src/images/logo/{{ logoTest }}-140.webp 140w, src/images/logo/{{ logoTest }}-280.webp 280w" sizes="75px">
-      <img src="src/images/logo/{{ logoTest }}-280.png" srcset="src/images/logo/{{ logoTest }}-140.png 140w, src/images/logo/{{ logoTest }}-280.png 280w" sizes="75px" width="280" height="209" alt="Entasis — тестовий варіант логотипу" loading="eager">
+      <img src="src/images/logo/{{ logoTest }}-280.png" srcset="src/images/logo/{{ logoTest }}-140.png 140w, src/images/logo/{{ logoTest }}-280.png 280w" sizes="75px" width="280" height="{{ logoTestHeight or 209 }}" alt="Entasis — тестовий варіант логотипу" loading="eager">
     </picture>
   </a>
   {% else %}<a class="logo" href="index.html">FORMA</a>
