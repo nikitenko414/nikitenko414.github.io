@@ -165,7 +165,23 @@ a {
   background: rgba(11, 10, 9, calc(var(--scroll-progress, 0) * 0.88));
   backdrop-filter: blur(calc(var(--scroll-progress, 0) * 10px));
   -webkit-backdrop-filter: blur(calc(var(--scroll-progress, 0) * 10px));
-  border-bottom-color: rgba(107, 99, 85, var(--scroll-progress, 0));
+  border-bottom-color: transparent;
+}
+
+/* Soft "skirt" below the header instead of a hard-edged rectangle cutting
+   off against the photo — without this, the solid header reads as a
+   distinct block sitting on top of the page (loudest where the photo
+   underneath is light/warm-toned) rather than blending into it. Fades
+   from half the header's current opacity down to nothing over 64px. */
+.site-header.site-header-overlay::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 100%;
+  height: 64px;
+  background: linear-gradient(to bottom, rgba(11, 10, 9, calc(var(--scroll-progress, 0) * 0.44)), transparent);
+  pointer-events: none;
 }
 
 main {
