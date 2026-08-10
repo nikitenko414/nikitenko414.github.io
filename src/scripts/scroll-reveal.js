@@ -13,11 +13,11 @@
 
   var targets = document.querySelectorAll(
     '.project-card, .journal-card, .testimonial-card, .process-item, ' +
-    '.article-body > h2, .project-gallery figure, .philosophy-media, .intro-category-card'
+    '.article-body > h2, .project-gallery figure, .philosophy-media'
   );
   if (!targets.length) return;
 
-  var groupSelectors = ['.carousel', '.related-grid', '.process-grid', '.testimonials-grid', '.blog-grid', '.project-gallery', '.intro-categories-cards'];
+  var groupSelectors = ['.carousel', '.related-grid', '.process-grid', '.testimonials-grid', '.blog-grid', '.project-gallery'];
 
   function staggerIndex(el) {
     for (var i = 0; i < groupSelectors.length; i++) {

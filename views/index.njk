@@ -137,6 +137,11 @@ extraBodyEnd: |
     }
   })();
   </script>
+  
+  <div class="category-preview" id="category-preview" aria-hidden="true">
+    <img id="category-preview-img" src="" alt="" width="320" height="240" loading="lazy">
+  </div>
+  <script src="src/scripts/category-preview.js"></script>
 ---
   <section class="hero" aria-labelledby="hero-title">
     <div class="hero-media">
@@ -155,47 +160,11 @@ extraBodyEnd: |
       </p>
       <div class="intro-categories">
         <p class="intro-categories-label">Або оберіть напрямок</p>
-        <nav class="intro-categories-cards" aria-label="Категорії проєктів">
-          <a class="intro-category-card" href="houses.html">
-            <span class="intro-category-media">
-              <picture>
-                <source type="image/avif" srcset="src/images/photos/1974596-640.avif 640w, src/images/photos/1974596-1280.avif 1280w" sizes="(max-width: 640px) 50vw, 25vw">
-                <source type="image/webp" srcset="src/images/photos/1974596-640.webp 640w, src/images/photos/1974596-1280.webp 1280w" sizes="(max-width: 640px) 50vw, 25vw">
-                <img src="src/images/photos/1974596-640.jpg" srcset="src/images/photos/1974596-640.jpg 640w, src/images/photos/1974596-1280.jpg 1280w" sizes="(max-width: 640px) 50vw, 25vw" width="640" height="800" alt="" loading="lazy">
-              </picture>
-            </span>
-            <span class="intro-category-title">Будинки</span>
-          </a>
-          <a class="intro-category-card" href="commercial.html">
-            <span class="intro-category-media">
-              <picture>
-                <source type="image/avif" srcset="src/images/photos/290275-640.avif 640w, src/images/photos/290275-1280.avif 1280w" sizes="(max-width: 640px) 50vw, 25vw">
-                <source type="image/webp" srcset="src/images/photos/290275-640.webp 640w, src/images/photos/290275-1280.webp 1280w" sizes="(max-width: 640px) 50vw, 25vw">
-                <img src="src/images/photos/290275-640.jpg" srcset="src/images/photos/290275-640.jpg 640w, src/images/photos/290275-1280.jpg 1280w" sizes="(max-width: 640px) 50vw, 25vw" width="640" height="800" alt="" loading="lazy">
-              </picture>
-            </span>
-            <span class="intro-category-title">Комерція</span>
-          </a>
-          <a class="intro-category-card" href="landscape.html">
-            <span class="intro-category-media">
-              <picture>
-                <source type="image/avif" srcset="src/images/photos/10177216-640.avif 640w, src/images/photos/10177216-1280.avif 1280w" sizes="(max-width: 640px) 50vw, 25vw">
-                <source type="image/webp" srcset="src/images/photos/10177216-640.webp 640w, src/images/photos/10177216-1280.webp 1280w" sizes="(max-width: 640px) 50vw, 25vw">
-                <img src="src/images/photos/10177216-640.jpg" srcset="src/images/photos/10177216-640.jpg 640w, src/images/photos/10177216-1280.jpg 1280w" sizes="(max-width: 640px) 50vw, 25vw" width="640" height="800" alt="" loading="lazy">
-              </picture>
-            </span>
-            <span class="intro-category-title">Ландшафт</span>
-          </a>
-          <a class="intro-category-card" href="interior.html">
-            <span class="intro-category-media">
-              <picture>
-                <source type="image/avif" srcset="src/images/photos/9708531-640.avif 640w, src/images/photos/9708531-1280.avif 1280w" sizes="(max-width: 640px) 50vw, 25vw">
-                <source type="image/webp" srcset="src/images/photos/9708531-640.webp 640w, src/images/photos/9708531-1280.webp 1280w" sizes="(max-width: 640px) 50vw, 25vw">
-                <img src="src/images/photos/9708531-640.jpg" srcset="src/images/photos/9708531-640.jpg 640w, src/images/photos/9708531-1280.jpg 1280w" sizes="(max-width: 640px) 50vw, 25vw" width="640" height="800" alt="" loading="lazy">
-              </picture>
-            </span>
-            <span class="intro-category-title">Інтер'єр</span>
-          </a>
+        <nav class="intro-categories-links" aria-label="Категорії проєктів">
+          <a href="houses.html" data-preview="src/images/photos/1974596-640.jpg">Будинки</a>
+          <a href="commercial.html" data-preview="src/images/photos/290275-640.jpg">Комерція</a>
+          <a href="landscape.html" data-preview="src/images/photos/10177216-640.jpg">Ландшафт</a>
+          <a href="interior.html" data-preview="src/images/photos/9708531-640.jpg">Інтер'єр</a>
         </nav>
       </div>
     </div>
