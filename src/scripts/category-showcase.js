@@ -9,8 +9,14 @@
 // Text is intentionally NOT part of that continuous blend — two
 // paragraphs of text overlapping mid-fade is just illegible, unlike two
 // photos which blend into an acceptable soft double-exposure. Instead
-// there's a single shared text block whose content swaps (with its own
-// quick, independent fade) only when the nearest whole index changes.
+// there's a single shared text block whose content swaps synchronously,
+// inside this same per-frame update() — never via an independent
+// setTimeout. A fast scroll fling can cross several slide boundaries
+// within one 160ms window; setTimeout-per-change used to queue up a
+// pile of stale delayed callbacks that fired out of order, which is what
+// actually produced the garbled/flickering text, not a rendering bug.
+// With everything driven by the same single rAF tick, there is only ever
+// one pending state and it's always the latest one.
 //
 // Layers fully at opacity 0 also get visibility:hidden, not just
 // opacity — 4 full-viewport images with a grayscale filter + gradient
@@ -52,14 +58,20 @@
     ctaEl.href = data.href;
   }
 
+  // Synchronous, single-state swap — no setTimeout, so there is never a
+  // backlog of delayed callbacks for a fast scroll to reorder. The
+  // opacity dip is a CSS transition (see .category-showcase-content in
+  // premium.css) retriggered by the reflow-forcing offsetWidth read
+  // below; browsers coalesce repeated retargets of the same transition
+  // cleanly, so even several index changes within one frame just settle
+  // on the latest text with no visible tear.
   function setActive(index) {
     if (index === currentActive) return;
     currentActive = index;
     contentEl.classList.add('is-swapping');
-    window.setTimeout(function () {
-      applyContent(index);
-      contentEl.classList.remove('is-swapping');
-    }, 160);
+    applyContent(index);
+    void contentEl.offsetWidth;
+    contentEl.classList.remove('is-swapping');
     dots.forEach(function (dot) {
       dot.setAttribute('aria-current', Number(dot.dataset.dot) === index ? 'true' : 'false');
     });
