@@ -1479,30 +1479,43 @@ main.has-hero-page {
   }
 }
 
-/* Category showcase (homepage, between hero and philosophy): a
-   self-contained full-screen scroll-snap sequence, one screen per
-   direction — Apple-product-page style. .category-showcase-track is its
-   own scroll container so the snap only engages while you're inside this
-   block; scrolling past the last slide hands off to the normal page
-   scroll below. Mirrors .hero's proven structure (media/gradient/content
-   stack) rather than inventing a new one. */
+/* Category showcase (homepage, between hero and philosophy): four
+   photos that crossfade into one another as you scroll, Apple-product-
+   page style — not a hard slide-to-slide cut. .category-showcase is
+   4x viewport height (drives the scroll distance); .category-showcase-
+   sticky pins itself to the viewport for that whole distance while
+   category-showcase.js computes continuous scroll progress and sets
+   each layer's opacity directly (0..1, triangular — a layer is fully
+   visible exactly at its own scroll position and fades as you move past
+   it in either direction), so two images are genuinely blended together
+   mid-transition, not swapped. No CSS transition on opacity here for the
+   same reason the header fade has none — a value rewritten every scroll
+   frame shouldn't also be mid-transition, that reads as lag, not
+   smoothness. */
 .category-showcase {
   position: relative;
+  height: 400vh;
 }
 
-.category-showcase-track {
+.category-showcase-sticky {
+  position: sticky;
+  top: 0;
   height: 100vh;
-  overflow-y: scroll;
-  scroll-snap-type: y mandatory;
+  overflow: hidden;
 }
 
-.category-showcase-slide {
-  position: relative;
-  height: 100vh;
-  scroll-snap-align: start;
+.category-showcase-layer {
+  position: absolute;
+  inset: 0;
+  opacity: 0;
   display: flex;
   align-items: flex-end;
   overflow: hidden;
+  will-change: opacity;
+}
+
+.category-showcase-layer:first-child {
+  opacity: 1;
 }
 
 .category-showcase-media {
@@ -1518,18 +1531,21 @@ main.has-hero-page {
   filter: grayscale(0.15) contrast(1.06) saturate(0.95);
 }
 
-.category-showcase-slide::after {
+.category-showcase-layer::after {
   content: '';
   position: absolute;
   inset: 0;
   z-index: 1;
-  background: linear-gradient(0deg, rgba(11, 10, 9, 0.8) 0%, rgba(11, 10, 9, 0.15) 55%, rgba(11, 10, 9, 0.4) 100%);
+  background: linear-gradient(0deg, rgba(11, 10, 9, 0.78) 0%, rgba(11, 10, 9, 0.15) 55%, rgba(11, 10, 9, 0.4) 100%);
 }
 
+/* Content is deliberately compact — this sits inside a hard 100vh box
+   with no scroll of its own, so it has to fit on short/laptop screens
+   too, not just tall desktop monitors. */
 .category-showcase-content {
   position: relative;
   z-index: 2;
-  padding-block: var(--space-6);
+  padding-block: var(--space-5);
   color: var(--color-text);
 }
 
@@ -1539,37 +1555,18 @@ main.has-hero-page {
 
 .category-showcase-content h2 {
   font-family: var(--font-display);
-  font-size: clamp(40px, 6vw, 72px);
+  font-size: clamp(28px, 4.5vw, 48px);
   font-weight: 600;
-  line-height: 1.05;
-  margin-block: var(--space-2) var(--space-3);
+  line-height: 1.1;
+  margin-block: var(--space-1) var(--space-2);
 }
 
 .category-showcase-content p {
   max-width: 52ch;
   color: var(--color-muted);
-  margin-bottom: var(--space-4);
-  font-size: 18px;
-}
-
-/* Blur/scale transition between the active slide and its neighbors — JS
-   (category-showcase.js) toggles .is-active via IntersectionObserver.
-   filter isn't literally transform/opacity, but like them it's
-   compositor-only (no layout/paint cost) — the same performance property
-   CLAUDE.md's transform/opacity-only rule is actually protecting, not a
-   loophole around it. .showcase-blur-ready is added by JS, not present
-   without it, so a no-JS visitor just sees every slide already sharp. */
-.showcase-blur-ready {
-  filter: blur(6px);
-  opacity: 0.45;
-  transform: scale(0.96);
-  transition: filter 400ms ease, opacity 400ms ease, transform 400ms ease;
-}
-
-.showcase-blur-ready.is-active {
-  filter: blur(0);
-  opacity: 1;
-  transform: scale(1);
+  margin-bottom: var(--space-3);
+  font-size: 16px;
+  line-height: 1.5;
 }
 
 .category-showcase-dots {
@@ -1608,25 +1605,37 @@ main.has-hero-page {
   .category-showcase-dots {
     right: var(--space-3);
   }
+  .category-showcase-content {
+    padding-block: var(--space-4);
+  }
+}
+
+@media (max-height: 700px) {
   .category-showcase-content h2 {
-    font-size: clamp(32px, 8vw, 48px);
+    font-size: clamp(24px, 4vw, 36px);
+  }
+  .category-showcase-content p {
+    display: none;
   }
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .category-showcase-track {
+  .category-showcase {
     height: auto;
-    overflow-y: visible;
-    scroll-snap-type: none;
   }
-  .category-showcase-slide {
+  .category-showcase-sticky {
+    position: static;
     height: auto;
-    min-height: 60vh;
+    overflow: visible;
+    display: flex;
+    flex-direction: column;
   }
-  .showcase-blur-ready {
-    filter: none;
+  .category-showcase-layer {
+    position: relative;
+    height: 70vh;
     opacity: 1;
-    transform: none;
-    transition: none;
+  }
+  .category-showcase-dots {
+    display: none;
   }
 }
