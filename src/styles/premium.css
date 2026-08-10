@@ -138,20 +138,28 @@ a {
 }
 
 /* Header */
+/* .site-header is the full-viewport-width fixed bar (background/border/
+   the scroll-fade layers below all paint edge-to-edge); .site-header-inner
+   is the centered 1240px content row inside it. Keeping them separate
+   matters — .wrap directly on .site-header would cap the whole bar's
+   width, not just its content, leaving visible gaps on wide screens. */
 .site-header {
   position: fixed;
   top: 0;
   left: 0;
   right: 0;
   z-index: 20;
+  background: var(--color-bg);
+  border-bottom: 1px solid var(--color-line);
+}
+
+.site-header-inner {
   display: flex;
   flex-wrap: wrap;
   align-items: center;
   justify-content: space-between;
   gap: var(--space-2) var(--space-4);
   padding-block: var(--space-4);
-  background: var(--color-bg);
-  border-bottom: 1px solid var(--color-line);
 }
 
 /* Set by header-scroll.js only on pages whose main starts with a hero photo

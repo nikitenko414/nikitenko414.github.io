@@ -1,6 +1,6 @@
 ---
-title: "FORMA — архітектурна студія"
-description: "FORMA проєктує простір, що промовляє тихо: житлові будинки, культурні центри та приватні вілли з увагою до світла й матеріалу."
+title: "ENTASIS — архітектурна студія"
+description: "ENTASIS проєктує простір, що промовляє тихо: житлові будинки, культурні центри та приватні вілли з увагою до світла й матеріалу."
 canonical: "/"
 ogDescription: "Простір, що промовляє тихо."
 ogType: "website"
@@ -13,13 +13,13 @@ jsonld: |
   {
     "@context": "https://schema.org",
     "@type": "Organization",
-    "name": "FORMA",
+    "name": "ENTASIS",
     "url": "/",
     "description": "Архітектурна студія: житлові та громадські простори.",
     "@graph": [
       {
         "@type": "LocalBusiness",
-        "name": "FORMA",
+        "name": "ENTASIS",
         "address": {
           "@type": "PostalAddress",
           "addressLocality": "Київ",
@@ -105,7 +105,7 @@ extraBodyEnd: |
         var subject = 'Заявка на проєкт: ' + (state.type || '');
         var body = 'Тип проєкту: ' + (state.type || '') + '\nБюджет: ' + (state.budget || '') +
           '\nЛокація: ' + (state.location || '') + '\nІм\'я: ' + name + '\nКонтакт: ' + contact;
-        intakeSubmit.href = 'mailto:studio@forma-arch.ua?subject=' + encodeURIComponent(subject) + '&body=' + encodeURIComponent(body);
+        intakeSubmit.href = 'mailto:studio@entasis-arch.ua?subject=' + encodeURIComponent(subject) + '&body=' + encodeURIComponent(body);
         var ready = name && contact && intakeConsent.checked;
         intakeSubmit.setAttribute('aria-disabled', ready ? 'false' : 'true');
       };
@@ -130,9 +130,9 @@ extraBodyEnd: |
       newsletterForm.addEventListener('submit', function (e) {
         e.preventDefault();
         var email = document.getElementById('newsletter-email').value;
-        var subject = 'Підписка на новини FORMA';
+        var subject = 'Підписка на новини ENTASIS';
         var body = 'Прошу підписати на розсилку новин студії: ' + email;
-        window.location.href = 'mailto:studio@forma-arch.ua?subject=' + encodeURIComponent(subject) + '&body=' + encodeURIComponent(body);
+        window.location.href = 'mailto:studio@entasis-arch.ua?subject=' + encodeURIComponent(subject) + '&body=' + encodeURIComponent(body);
       });
     }
   })();
@@ -428,7 +428,7 @@ extraBodyEnd: |
             <input type="checkbox" id="intake-consent" required>
             Погоджуюсь з <a href="privacy.html" target="_blank" rel="noopener">Політикою конфіденційності</a>
           </label>
-          <a class="intake-submit" id="intake-submit" href="mailto:studio@forma-arch.ua" aria-disabled="true">Надіслати заявку</a>
+          <a class="intake-submit" id="intake-submit" href="mailto:studio@entasis-arch.ua" aria-disabled="true">Надіслати заявку</a>
         </fieldset>
       </form>
       <div class="intake-progress" aria-hidden="true">
