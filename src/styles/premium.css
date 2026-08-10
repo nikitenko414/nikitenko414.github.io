@@ -1508,10 +1508,7 @@ main.has-hero-page {
   position: absolute;
   inset: 0;
   opacity: 0;
-  display: flex;
-  align-items: flex-end;
   overflow: hidden;
-  will-change: opacity;
 }
 
 .category-showcase-layer:first-child {
@@ -1539,14 +1536,40 @@ main.has-hero-page {
   background: linear-gradient(0deg, rgba(11, 10, 9, 0.78) 0%, rgba(11, 10, 9, 0.15) 55%, rgba(11, 10, 9, 0.4) 100%);
 }
 
-/* Content is deliberately compact — this sits inside a hard 100vh box
-   with no scroll of its own, so it has to fit on short/laptop screens
-   too, not just tall desktop monitors. */
+/* Per-layer static caption — only shown under prefers-reduced-motion
+   (see below). The animated experience uses the single shared
+   #showcase-content block instead, since crossfading two blocks of text
+   the same way as the photos just produces illegible overlapping text. */
+.category-showcase-static {
+  display: none;
+}
+
+/* Shared text block (one instance, not per-layer): content is swapped by
+   category-showcase.js only when the nearest whole slide index changes,
+   with its own quick .is-swapping fade — independent of and much faster
+   than the continuous photo crossfade, so it never overlaps itself.
+   Deliberately compact — this sits inside a hard 100vh box with no
+   scroll of its own, so it has to fit on short/laptop screens too, not
+   just tall desktop monitors. */
 .category-showcase-content {
-  position: relative;
+  position: absolute;
+  inset: 0;
   z-index: 2;
+  display: flex;
+  align-items: flex-end;
   padding-block: var(--space-5);
   color: var(--color-text);
+  opacity: 1;
+  transition: opacity 160ms ease;
+  pointer-events: none;
+}
+
+.category-showcase-content a {
+  pointer-events: auto;
+}
+
+.category-showcase-content.is-swapping {
+  opacity: 0;
 }
 
 .category-showcase-content .kicker {
@@ -1634,7 +1657,23 @@ main.has-hero-page {
     position: relative;
     height: 70vh;
     opacity: 1;
+    display: flex;
+    align-items: flex-end;
   }
+  .category-showcase-static {
+    display: block;
+    position: relative;
+    z-index: 2;
+    padding-block: var(--space-4);
+    color: var(--color-text);
+  }
+  .category-showcase-static h2 {
+    font-family: var(--font-display);
+    font-size: clamp(28px, 4.5vw, 40px);
+    font-weight: 600;
+    margin-bottom: var(--space-2);
+  }
+  .category-showcase-content,
   .category-showcase-dots {
     display: none;
   }
