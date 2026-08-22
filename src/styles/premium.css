@@ -1553,7 +1553,19 @@ main.has-hero-page {
   inset: 0;
   z-index: 2;
   display: flex;
-  align-items: flex-end;
+  /* No flex-direction here used to mean row (flex's default) — kicker,
+     h2, the description paragraph and the CTA all laid out side by side
+     competing for the same horizontal space, not stacked. Barely
+     survivable on a wide desktop viewport (still an unintentional
+     "title next to the button" look, just not obviously broken); on a
+     375px phone screen there isn't remotely enough width for 4 items in
+     one row, so each one gets squeezed into an oddly narrow column and
+     wraps into a tall, cramped mess (measured live: the description
+     paragraph forced into ~122px of width, wrapping into 240px of
+     height) — reported as the captions "looking awful" on mobile. */
+  flex-direction: column;
+  align-items: stretch;
+  justify-content: flex-end;
   padding-block: var(--space-5);
   color: var(--color-text);
   opacity: 1;
@@ -1562,6 +1574,12 @@ main.has-hero-page {
 }
 
 .category-showcase-content a {
+  /* Stretch (see the parent's align-items) is right for the kicker/h2/p
+     above it — they're text that should use the full available width —
+     but a button has its own natural "hug the label" width from
+     .cta-outline's display: inline-block, and stretch would override
+     that with an oddly wide, full-width button. */
+  align-self: flex-start;
   pointer-events: auto;
 }
 
