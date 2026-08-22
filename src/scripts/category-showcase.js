@@ -1,39 +1,38 @@
 // Full-screen category showcase (homepage only): .category-showcase pins to
-// the viewport and, as the user scrolls through it, blends between 4
-// full-bleed visuals (Будинки, Інтер'єр, Ландшафт, Комерція) — Apple-
-// product-page style, one image genuinely dissolving into the next, not a
-// slide/section swap.
+// the viewport, and ONE continuous video walks through all 4 categories
+// (Будинки -> Інтер'єр -> Ландшафт -> Комерція) as a single unbroken shot —
+// not four separate clips cross-dissolving into each other. Scrolling
+// forward plays the video forward toward the next category's moment in
+// that shot and holds there; scrolling back plays a separately pre-
+// reversed copy of the same shot back toward the previous one and holds
+// there. This is a deliberate change from an earlier version of this file:
+// see below for why.
 //
-// This is now driven by GSAP's ScrollTrigger (pin + scrub), not hand-rolled
-// scroll math. Three from-scratch versions were tried and dropped first:
-//   1. A wheel-intercepted "one notch = one category" stepper, with
-//      preventDefault + a forced ~550ms animation + a settle-timer to snap
-//      back if a raw scroll stopped mid-transition. Every one of those
-//      layers was fighting scroll physics the browser already gets right,
-//      and each fix (freeze on direction reversal, "flies to the end" on
-//      trackpad momentum, garbled text from stacked setTimeouts) turned out
-//      to be the same root problem wearing a new symptom.
-//   2. Four real 100vh sections with native CSS scroll-snap — robust
-//      (no hand-rolled physics at all), but it read as distinct sections
-//      sharpening into focus one after another, not one continuous image
-//      flowing into the next, which is the whole point here.
-//   3. A plain `scroll` listener + requestAnimationFrame computing a
-//      triangular opacity falloff by hand from getBoundingClientRect() —
-//      logically correct (verified: it does produce a genuine 50/50 blend
-//      mid-transition) but with nothing governing *how much scroll input*
-//      one transition spans, an ordinary fast flick could cross an entire
-//      transition in a handful of frames, reading as an instant swap
-//      instead of a dissolve.
-// ScrollTrigger's pin+scrub is the standard tool for exactly this pattern
-// (pin a section, scrub a timeline's progress to scroll position) — it
-// owns the pin (handles the cross-browser footguns plain `position: sticky`
-// has, using a spacer element instead), owns the scroll math, and `scrub`
-// takes a smoothing value so scrubbing doesn't jump discontinuously even
-// on a fast flick. What's genuinely custom to this project (which video
-// plays forward vs. reversed, the self-healing pause listener, the text
-// swap) stays as plain JS hooked into ScrollTrigger's onUpdate/onLeave/
-// onEnterBack callbacks — GSAP owns the scroll-to-progress mapping, not the
-// video/text behavior on top of it.
+// What this replaces: a version with 4 separate video/photo layers
+// stacked on top of each other, cross-fading via opacity as you scrolled
+// (Apple-product-page "dissolve" style). That version was measured to
+// work correctly end-to-end (checked every way available: direct value
+// inspection, a real Chrome session, the deployed site) — but it was
+// simply the wrong effect for what was actually wanted here: two images
+// blended together mid-transition reads as looking "broken" (two things
+// overlapping) if what you actually want is the feeling of one take that
+// never cuts. Correctness of the crossfade was never the problem; it was
+// building the wrong thing correctly.
+//
+// The four categories now correspond to four specific timestamps inside
+// one combined video file (data-checkpoints, seconds, read from the
+// <video>'s own data attribute so this file has no hard-coded numbers
+// tied to specific source footage): checkpoint[0] is the first frame
+// (Будинки, the house exterior), checkpoint[1] is where the original
+// "houses" shot arrives at the interior kitchen (Інтер'єр), checkpoint[2]
+// is where the shot that continues out to the pool/garden ends
+// (Ландшафт), checkpoint[3] is the end of the shot that continues into
+// the commercial building (Комерція). Scrolling from one category to the
+// next plays *through* that stretch of footage in real time, then pauses
+// exactly on the checkpoint frame — it does not scrub frame-by-frame with
+// the scrollbar (that would mean seeking on every scroll tick, which is a
+// discrete jump for video, not a smooth scrub — see the "no scroll-
+// scrubbing" note below).
 (function () {
   var section = document.getElementById('category-showcase');
   if (!section) return;
@@ -42,82 +41,14 @@
 
   gsap.registerPlugin(ScrollTrigger);
 
-  var layers = section.querySelectorAll('.category-showcase-layer');
-  var count = layers.length;
-  if (!count) return;
+  var video = section.querySelector('.category-showcase-video');
+  if (!video) return;
 
-  // Each video plays once per crossing into "clear focus" — opacity >=
-  // FOCUS_THRESHOLD, not just >0 — forward if scrolled down into it, or a
-  // real, separately pre-reversed clip if scrolled up back into it, and
-  // holds on whichever frame it ends on. See git history for the two
-  // approaches (manual currentTime seeking; a canvas frame sequence) tried
-  // and dropped before landing on real forward/reverse <video> files.
-  // FOCUS_THRESHOLD = 0.8 balances two failure modes: too low (e.g. any
-  // opacity > 0) and a layer starts playing while still faintly
-  // double-exposed with its neighbor; too high (e.g. >= 0.95, or "nearest
-  // category") and a fast scroll tick can jump clean over the qualifying
-  // band and never trigger at all. 0.8 leaves a 0.4-wide qualifying band —
-  // wide enough that a single scroll tick has to cover a large fraction of
-  // an entire transition to skip over it.
-  var FOCUS_THRESHOLD = 0.8;
-  var videoLayers = [];
-  layers.forEach(function (layerEl, i) {
-    var video = layerEl.querySelector('.category-showcase-video');
-    if (!video) return;
-    var vl = { index: i, video: video, reverseSrc: video.dataset.videoReverse, focused: false };
-    videoLayers.push(vl);
-    // Self-heals a video that stops without this file asking it to. Live-
-    // traced: a <video> can end up paused seconds into a clip with neither
-    // an error nor any pause() call from this code (buffering stall,
-    // background/power throttling, or an autoplay-policy check landing
-    // stricter several ticks into a scroll-driven chain than at page load).
-    // 'pause' fires regardless of *why* playback stopped, so checking
-    // vl.focused (false only once this code intentionally paused it for
-    // having left focus) tells a self-inflicted stop apart from an
-    // intentional one or a real end-of-clip.
-    video.addEventListener('pause', function () {
-      if (!vl.focused || video.ended) return;
-      var playResult = video.play();
-      if (playResult && playResult.catch) playResult.catch(function () {});
-    });
-  });
-
-  function playForwardOrReverse(vl, direction) {
-    // The <video> already has a <source src=forward> in the markup, so the
-    // common case (scrolling down into a layer) needs no src swap or
-    // reload — only touch src/.load() when reverse is actually needed, and
-    // again when coming back to forward after having used reverse.
-    var useReverse = direction < 0 && vl.reverseSrc;
-    if (useReverse) {
-      if (vl.video.getAttribute('src') !== vl.reverseSrc) {
-        vl.video.setAttribute('src', vl.reverseSrc);
-        vl.video.load();
-      }
-    } else if (vl.video.hasAttribute('src')) {
-      vl.video.removeAttribute('src');
-      vl.video.load();
-    }
-    vl.video.currentTime = 0;
-    // play() rejects if the browser blocks autoplay for some reason (rare
-    // given muted+playsinline, but possible pre-interaction on strict
-    // mobile browsers) — swallow it rather than surface an unhandled
-    // rejection; the poster frame is still a reasonable static fallback.
-    var playResult = vl.video.play();
-    if (playResult && playResult.catch) playResult.catch(function () {});
-  }
-
-  function updateVideoPlayback(opacityByIndex, direction) {
-    videoLayers.forEach(function (vl) {
-      var isFocused = opacityByIndex[vl.index] >= FOCUS_THRESHOLD;
-      if (isFocused && !vl.focused) {
-        vl.focused = true;
-        playForwardOrReverse(vl, direction);
-      } else if (!isFocused && vl.focused) {
-        vl.focused = false;
-        vl.video.pause();
-      }
-    });
-  }
+  var forwardSrc = video.dataset.videoForward;
+  var reverseSrc = video.dataset.videoReverse;
+  var checkpoints = video.dataset.checkpoints.split(',').map(Number);
+  var count = checkpoints.length;
+  var totalDuration = checkpoints[count - 1];
 
   var dots = section.querySelectorAll('.category-showcase-dots [data-dot]');
   var contentEl = document.getElementById('showcase-content');
@@ -126,9 +57,6 @@
   var descEl = document.getElementById('showcase-desc');
   var ctaEl = document.getElementById('showcase-cta');
 
-  // Order tells a spatial "walk-through" story, not the nav's alphabetical
-  // order: approach the house -> step inside -> out into the garden/
-  // landscape -> beyond the property line to commercial work.
   var categories = [
     { kicker: '01 / 04', title: 'Будинки', desc: 'Приватні житлові будинки та вілли, де архітектура підпорядкована світлу, ландшафту й способу життя мешканців.', href: 'houses.html' },
     { kicker: '02 / 04', title: "Інтер'єр", desc: "Інтер'єрні рішення для будинків, квартир і лофтів — там, де завершується архітектура й починається щоденне життя.", href: 'interior.html' },
@@ -137,7 +65,6 @@
   ];
 
   var currentActive = -1;
-
   function applyContent(index) {
     var data = categories[index];
     if (!data) return;
@@ -146,11 +73,6 @@
     descEl.textContent = data.desc;
     ctaEl.href = data.href;
   }
-
-  // Synchronous, single-state swap — no setTimeout, so there's never a
-  // backlog of delayed callbacks for a fast scroll to reorder. The opacity
-  // dip is a CSS transition (see .category-showcase-content in
-  // premium.css) retriggered by the reflow-forcing offsetWidth read below.
   function setActive(index) {
     if (index === currentActive) return;
     currentActive = index;
@@ -162,158 +84,162 @@
       dot.setAttribute('aria-current', Number(dot.dataset.dot) === index ? 'true' : 'false');
     });
   }
-
   applyContent(0);
 
-  // The crossfade itself is a real gsap.timeline(), not opacity computed
-  // by hand and poked into inline styles every onUpdate tick. Both report
-  // the same progress number, but only a real tween is guaranteed to be
-  // the thing actually driving paint: GSAP's own renderer owns these
-  // opacity values once they're tweens, batching and scheduling the writes
-  // itself, instead of this file re-deriving and re-assigning all 4 every
-  // single tick regardless of whether anything visibly needs to change.
-  // This is also the pattern GSAP's own crossfade examples use, not a
-  // detail specific to this project.
-  //
-  // Every layer gets the same triangular shape: fade in from 0->1 while
-  // position runs from (i-1) to i, fade out 1->0 while it runs from i to
-  // (i+1) — layer 0 has no fade-in leg (starts already at opacity 1) and
-  // the last layer has no fade-out leg, matching position's fixed 0..
-  // count-1 range. Position units double as the timeline's own time units
-  // (duration: 1 per leg) — with scrub attached, GSAP maps scroll progress
-  // onto timeline.time() directly, so "position" and "timeline time" are
-  // the same number.
-  gsap.set(layers[0], { opacity: 1 });
-  for (var li = 1; li < count; li++) gsap.set(layers[li], { opacity: 0 });
+  // --- Single-video playback state -----------------------------------
+  // currentTimeForward is "where the walkthrough conceptually is,"
+  // expressed as a time in the *forward* file's timeline, regardless of
+  // whether the forward or reverse file is the one actually loaded right
+  // now (the reverse file's own time is just totalDuration - this).
+  var currentTimeForward = 0;
+  var activeDirection = 1; // 1 = forward file loaded, -1 = reverse file loaded
+  var targetIndex = 0;
+  // True whenever the video is deliberately resting at a checkpoint —
+  // set right before that intentional pause() and only ever cleared
+  // right before the *next* intentional play() starts (in goToIndex), not
+  // immediately after pause() returns. That distinction turned out to
+  // matter: a video's 'pause' event fires asynchronously, not inline with
+  // the pause() call that triggered it, so a flag reset synchronously
+  // right after pause() had already flipped back to false by the time the
+  // event listener below actually ran — making every checkpoint arrival
+  // look like an *unintentional* stop and get auto-resumed, which is what
+  // silently carried playback straight through several checkpoints past
+  // the intended one (confirmed live: paused() was called correctly at
+  // the target time, but the self-heal listener resumed it milliseconds
+  // later and it kept playing to the very end of the file). A flag that
+  // stays true until something else deliberately clears it survives that
+  // delay regardless of exactly when the browser gets around to firing
+  // the event.
+  var restingAtCheckpoint = false;
 
-  // Tracks direction from the timeline's own time, not ScrollTrigger's
-  // self.direction — see the timeline onUpdate below for why.
-  var lastTlTime = 0;
+  function toReverseTime(t) { return totalDuration - t; }
 
-  var tl = gsap.timeline({
-    scrollTrigger: {
-      trigger: section,
-      start: 'top top',
-      end: '+=' + (count - 1) * 100 + '%',
-      pin: '.category-showcase-sticky',
-      scrub: 0.3
-      // NOTE on "resting on a partial blend": wherever the user's scroll
-      // physically stops is wherever the crossfade rests too — almost
-      // never exactly on a category, so it can settle on a genuine
-      // partial blend of two images (confirmed from a real screenshot:
-      // stopped scrolling, not mid-motion, and still showing two images
-      // overlapping). ScrollTrigger's built-in `snap` option (snapTo,
-      // directional: false) was tried here as the fix — but was measured,
-      // via a clean before/after trace (identical jump, snap config
-      // removed vs. present — see git history), to reliably drive the
-      // scroll position past the *nearest* category and only ever settle
-      // at the far end of the section instead, regardless of snapTo/
-      // directional. That's a worse bug than the one it was meant to fix
-      // (yanking the user two categories further than where they
-      // stopped), so it was pulled back out rather than shipped, in
-      // favor of the plain debounced native-scrollTo settle further down
-      // this file.
-    },
-    // Deliberately a *timeline* onUpdate, not scrollTrigger.onUpdate.
-    // scrollTrigger.onUpdate only fires in response to an actual scroll/
-    // resize event — but scrub means the timeline keeps easing toward the
-    // target for up to 0.3s *after* scrolling has already stopped, and
-    // none of those catch-up frames are scroll events. Confirmed live:
-    // scrollTrigger.onUpdate's last call during a scroll used tl.time()
-    // ~2.11 correctly, then went silent while the scrub tween kept
-    // running and opacity kept visibly changing for another few hundred
-    // ms — leaving the caption/video-focus logic one full category
-    // stale (reading "Комерційні приміщення" while the image was still
-    // most of the way through "Ландшафтний дизайн"). A timeline-level
-    // onUpdate fires on every one of those render frames regardless of
-    // *why* the timeline moved, which is exactly what stays in step with
-    // whatever opacity is doing on screen.
-    onUpdate: function () {
-      var position = this.time();
-      var direction = position >= lastTlTime ? 1 : -1;
-      lastTlTime = position;
-      var opacityByIndex = [];
-      layers.forEach(function (layer, i) {
-        opacityByIndex[i] = gsap.getProperty(layer, 'opacity');
-      });
-      updateVideoPlayback(opacityByIndex, direction);
-      setActive(Math.round(position));
+  // Self-heals a video that stops without this file asking it to (buffering
+  // stall, background/power throttling, or similar — anything that isn't
+  // this file's own intentional pause at a checkpoint).
+  video.addEventListener('pause', function () {
+    if (restingAtCheckpoint || video.ended) return;
+    var playResult = video.play();
+    if (playResult && playResult.catch) playResult.catch(function () {});
+  });
+
+  // Only one of these can legitimately be "in flight" at a time — a fast
+  // scroll can call goToIndex again (with a further target) before the
+  // previous target is ever reached, and without this, the *previous*
+  // call's listener stayed attached too: both then raced to see whichever
+  // target the video's currentTime hit first, occasionally letting the
+  // video run all the way past a nearer target while the caption (updated
+  // synchronously in goToIndex, not from this listener) had already moved
+  // on to a farther one — the two disagreeing is exactly what a fast
+  // scroll test surfaced live (caption "Ландшафтний дизайн" while
+  // currentTime had already run to the very end of the file).
+  var activeMonitor = null;
+  function monitorTowards(targetTimeInActiveFile, onArrive) {
+    if (activeMonitor) video.removeEventListener('timeupdate', activeMonitor);
+    function check() {
+      if (video.paused) return;
+      if (video.currentTime >= targetTimeInActiveFile - 0.04) {
+        restingAtCheckpoint = true;
+        video.pause();
+        video.currentTime = targetTimeInActiveFile;
+        video.removeEventListener('timeupdate', check);
+        activeMonitor = null;
+        onArrive();
+      }
+    }
+    activeMonitor = check;
+    video.addEventListener('timeupdate', check);
+  }
+
+  // No scroll-scrubbing on purpose: seeking a <video> on every scroll
+  // tick is a discrete jump (no smooth in-between frames), so tying
+  // currentTime directly to scroll position reads as stutter, not a
+  // scrub. What actually looks smooth is letting the browser play the
+  // footage at its own native rate once a direction is decided, and only
+  // holding on the checkpoint frame once arrived — the same principle
+  // the per-category videos in the previous version of this file used,
+  // just spanning one combined shot instead of four separate ones.
+  function goToIndex(index) {
+    index = Math.max(0, Math.min(count - 1, index));
+    targetIndex = index;
+    // Re-sync from wherever the video *actually* is right now, not just
+    // wherever the last-completed transition left off — a fast scroll can
+    // call goToIndex again while a previous transition is still mid-
+    // flight (activeMonitor still set), and currentTimeForward would
+    // otherwise still reflect the transition *before* that one.
+    if (activeMonitor) {
+      currentTimeForward = activeDirection === 1 ? video.currentTime : toReverseTime(video.currentTime);
+    }
+    var targetTimeForward = checkpoints[index];
+    if (Math.abs(targetTimeForward - currentTimeForward) < 0.01) {
+      setActive(index);
+      return;
+    }
+    var needDirection = targetTimeForward > currentTimeForward ? 1 : -1;
+    var wantedSrc = needDirection === 1 ? forwardSrc : reverseSrc;
+    if (activeDirection !== needDirection) {
+      activeDirection = needDirection;
+      video.setAttribute('src', wantedSrc);
+      video.load();
+      var seekTo = needDirection === 1 ? currentTimeForward : toReverseTime(currentTimeForward);
+      video.currentTime = seekTo;
+    }
+    var targetTimeInActiveFile = needDirection === 1 ? targetTimeForward : toReverseTime(targetTimeForward);
+    monitorTowards(targetTimeInActiveFile, function () {
+      currentTimeForward = targetTimeForward;
+      setActive(index);
+    });
+    // Clearing this here, right before the intentional play() that's
+    // about to start, is what makes it safe against the pause event's
+    // async timing (see restingAtCheckpoint's own comment) — by the time
+    // any 'pause' event from the *previous* checkpoint arrival could still
+    // fire, this is already false, so that stale event no longer matters
+    // either way once a new transition has genuinely started.
+    restingAtCheckpoint = false;
+    var playResult = video.play();
+    if (playResult && playResult.catch) playResult.catch(function () {});
+    // Caption reflects the *destination* immediately, same as a video
+    // chapter title changing as soon as you jump to that chapter — it
+    // does not wait for the footage to finish arriving.
+    setActive(index);
+  }
+
+  // pin keeps the viewport locked on .category-showcase-sticky for the
+  // section's scroll distance (via ScrollTrigger's own spacer element,
+  // not CSS position:sticky — see git history for the cross-browser
+  // pinning issues that ruled that out). No scrub, no timeline of tweens:
+  // the only thing driven by scroll here is *which checkpoint index is
+  // currently the target*, via plain rounding of scroll progress — the
+  // video's own playback handles all the actual motion.
+  ScrollTrigger.create({
+    trigger: section,
+    start: 'top top',
+    end: '+=' + (count - 1) * 100 + '%',
+    pin: '.category-showcase-sticky',
+    onUpdate: function (self) {
+      var position = self.progress * (count - 1);
+      var rounded = Math.round(position);
+      if (rounded !== targetIndex) goToIndex(rounded);
     }
   });
-  layers.forEach(function (layer, i) {
-    if (i > 0) tl.fromTo(layer, { opacity: 0 }, { opacity: 1, duration: 1, ease: 'none' }, i - 1);
-    if (i < count - 1) tl.to(layer, { opacity: 0, duration: 1, ease: 'none' }, i);
-  });
 
-  // ScrollTrigger measures the pin start/end at setup time, based on
-  // whatever the page's layout height is *right then*. This section's own
-  // height never changes (it's driven by ScrollTrigger's `end` config, not
-  // document flow), but content further down the page does keep shifting
-  // as web fonts swap in (font-display) and lazy images/posters finish
-  // loading and take up their real box — each of those changes the
-  // document's total height *after* ScrollTrigger already measured it.
-  // ScrollTrigger doesn't know to recheck on its own for that (it reacts
-  // to window resize, not arbitrary later layout shifts elsewhere on the
-  // page), so a stale measurement is a real, separate way this could look
-  // broken beyond anything the crossfade math itself controls: refresh
-  // once more once fonts and the full page (images included) have
-  // actually finished loading.
-  if (document.fonts && document.fonts.ready) {
-    document.fonts.ready.then(function () { ScrollTrigger.refresh(); });
-  }
-  window.addEventListener('load', function () { ScrollTrigger.refresh(); });
-
-  function getTrigger() {
-    return ScrollTrigger.getAll().filter(function (st) { return st.vars.trigger === section; })[0];
-  }
-
-  function scrollToPosition(positionValue) {
-    var trigger = getTrigger();
-    if (!trigger) return;
-    var targetProgress = positionValue / (count - 1);
-    var targetY = trigger.start + targetProgress * (trigger.end - trigger.start);
-    window.scrollTo({ top: targetY, behavior: 'smooth' });
-  }
-
-  // Dots jump straight to a category's ScrollTrigger position via the
-  // browser's own smooth scrolling — no extra GSAP plugin needed for a
-  // plain scroll-to-Y.
+  // Only ever ask the scroll to move — goToIndex is deliberately NOT
+  // also called directly here. It already runs from ScrollTrigger's
+  // onUpdate as scrollY animates toward this target, and calling it a
+  // second time from here raced against that: two independent calls each
+  // reading/writing the same currentTimeForward and video.currentTime a
+  // few milliseconds apart, occasionally letting the video run straight
+  // past the intended checkpoint before either call's monitor caught up.
+  // One source of truth (scroll position) driving one thing that reacts
+  // to it (goToIndex) avoids that entirely.
   dots.forEach(function (dot) {
     dot.addEventListener('click', function () {
-      scrollToPosition(Number(dot.dataset.dot));
+      var index = Number(dot.dataset.dot);
+      var trigger = ScrollTrigger.getAll().filter(function (st) { return st.vars.trigger === section; })[0];
+      if (!trigger) return;
+      var targetProgress = index / (count - 1);
+      var targetY = trigger.start + targetProgress * (trigger.end - trigger.start);
+      window.scrollTo({ top: targetY, behavior: 'smooth' });
     });
   });
-
-  // Settle-on-idle: GSAP's own built-in `snap` was tried for this and
-  // measured (see the onUpdate comment above) to reliably overshoot past
-  // the nearest category, so this is a plain, minimal alternative —
-  // native smooth scrollTo, exactly like the dots above, just triggered
-  // automatically once scrolling has been idle for a bit instead of on a
-  // click. This is deliberately NOT the hand-rolled settle-timer this
-  // project had much earlier (the one that caused freezing/fighting new
-  // input): that version used a *custom* animation loop to move scrollY,
-  // which is what fought a new scroll starting mid-settle. Here there is
-  // no custom animation loop at all — `scrollTo({behavior:'smooth'})` is
-  // the same native browser-driven smooth scroll the dots already use,
-  // and native smooth scrolling already correctly yields to new scroll
-  // input on its own, so a debounce timer here only needs to decide
-  // *when* to call it, never how to animate or how to cancel it.
-  var settleTimer = null;
-  function scheduleSettle() {
-    if (settleTimer) clearTimeout(settleTimer);
-    settleTimer = setTimeout(function () {
-      var trigger = getTrigger();
-      if (!trigger) return;
-      // Only settle while actually inside this section's pinned range —
-      // scrolling past it entirely (progress 0 or 1 already) needs no
-      // correction, and touching scrollY while the user is elsewhere on
-      // the page would be a real bug, not a fix.
-      if (trigger.progress <= 0 || trigger.progress >= 1) return;
-      var position = tl.time();
-      var nearest = Math.round(position);
-      if (Math.abs(position - nearest) < 0.02) return; // already close enough
-      scrollToPosition(nearest);
-    }, 150);
-  }
-  window.addEventListener('scroll', scheduleSettle, { passive: true });
 })();

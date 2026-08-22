@@ -1479,33 +1479,21 @@ main.has-hero-page {
   }
 }
 
-/* Category showcase (homepage, between hero and philosophy): one photo/
-   video genuinely dissolving into the next as you scroll, Apple-product-
-   page style — the actual ask here, confirmed after a detour through a
-   native-scroll-snap-sections version that was more robust but didn't
-   look like this: it scrolled like separate stacked sections (each its
-   own sharpen-into-focus reveal), not like one continuous image flowing
-   into another. Getting the dissolve look back requires the layers to
-   occupy the exact same box at the same time (so two are genuinely
-   blended mid-transition, not just adjacent) — one pinned viewport with
-   all four layers absolutely stacked inside it, opacity driven from
-   scroll position.
-   Two hand-rolled versions of the scroll-driving JS were tried and
-   dropped: a wheel-intercepted/preventDefault stepper (fought scroll
-   physics, caused most of this section's worst bugs — see
-   category-showcase.js header for the full history), then a plain
-   `scroll` + requestAnimationFrame listener computing opacity from
-   getBoundingClientRect() by hand (logically correct, but nothing
-   governed how much scroll distance a transition spans, so a fast flick
-   could cross one in a handful of frames and read as an instant swap).
-   Both the pin and the scroll-to-progress math are now owned by GSAP's
-   ScrollTrigger (pin + scrub) instead — see category-showcase.js. The
-   pinning itself no longer happens via `position: sticky` here (Scroll-
-   Trigger applies its own positioning via inline styles once it pins
-   .category-showcase-sticky, using a spacer element rather than sticky's
-   containing-block-dependent behavior), and the total scroll distance is
-   set as a JS constant (`end` in the ScrollTrigger config), not this
-   section's own CSS height. */
+/* Category showcase (homepage, between hero and philosophy): ONE
+   continuous video walking through all 4 categories as a single unbroken
+   shot (Будинки -> Інтер'єр -> Ландшафт -> Комерція), not four separate
+   clips cross-fading into each other. See category-showcase.js for the
+   full history of what was tried before this — a 4-layer opacity
+   crossfade was built and verified working correctly, but it was the
+   wrong effect: two images blended together mid-transition reads as
+   "broken" if the actual goal is one take that never cuts.
+   The pin (locking the viewport while the video plays through) is owned
+   by GSAP's ScrollTrigger via a spacer element, not CSS `position:
+   sticky` (sticky has cross-browser pinning/flicker edge cases with
+   nested overflow this sidesteps). There's no opacity timeline and no
+   scrub here at all now — scroll only decides *which checkpoint is the
+   current target*; the video's own native playback (see
+   category-showcase.js) handles all the actual motion. */
 .category-showcase {
   position: relative;
 }
@@ -1516,24 +1504,12 @@ main.has-hero-page {
   overflow: hidden;
 }
 
-.category-showcase-layer {
-  position: absolute;
-  inset: 0;
-  opacity: 0;
-  overflow: hidden;
-}
-
-.category-showcase-layer:first-child {
-  opacity: 1;
-}
-
 .category-showcase-media {
   position: absolute;
   inset: 0;
   z-index: 0;
 }
 
-.category-showcase-media img,
 .category-showcase-media video {
   position: absolute;
   inset: 0;
@@ -1542,14 +1518,11 @@ main.has-hero-page {
   object-fit: cover;
 }
 
-/* Будинки/Ландшафт/Комерція are real <video> elements (see
-   category-showcase.js for why — a real video beats a re-encoded frame
-   sequence on every axis: smoothness, file size, no re-encoding
-   artifacts). No grayscale/contrast/saturate filter on this AI-generated
-   footage or its poster stills on purpose — that muting is calibrated for
-   the Pexels placeholder photos used elsewhere and reads as "mushy"/soft
-   on these frames even though they're sharp at full strength. */
-.category-showcase-layer::after {
+/* No grayscale/contrast/saturate filter on this AI-generated footage on
+   purpose — that muting is calibrated for the Pexels placeholder photos
+   used elsewhere and reads as "mushy"/soft on this footage even though
+   it's sharp at full strength. */
+.category-showcase-media::after {
   content: '';
   position: absolute;
   inset: 0;
@@ -1557,10 +1530,13 @@ main.has-hero-page {
   background: linear-gradient(0deg, rgba(11, 10, 9, 0.78) 0%, rgba(11, 10, 9, 0.15) 55%, rgba(11, 10, 9, 0.4) 100%);
 }
 
-/* Per-layer static caption — only shown under prefers-reduced-motion
-   (see below). The animated experience uses the single shared
-   #showcase-content block instead, since crossfading two blocks of text
-   the same way as the photos just produces illegible overlapping text. */
+/* Static caption + links — only shown under prefers-reduced-motion (see
+   below), since the animated experience drives #showcase-content
+   instead, and prefers-reduced-motion means category-showcase.js exits
+   before it ever touches the video (still frame only — see the poster
+   attribute). Includes real links to all 4 category pages, since without
+   the scroll-driven video there's otherwise no way to reach them from
+   this section at all. */
 .category-showcase-static {
   display: none;
 }
@@ -1669,15 +1645,8 @@ main.has-hero-page {
   }
   .category-showcase-sticky {
     position: static;
-    height: auto;
-    overflow: visible;
-    display: flex;
-    flex-direction: column;
-  }
-  .category-showcase-layer {
-    position: relative;
     height: 70vh;
-    opacity: 1;
+    overflow: hidden;
     display: flex;
     align-items: flex-end;
   }
@@ -1693,6 +1662,17 @@ main.has-hero-page {
     font-size: clamp(28px, 4.5vw, 40px);
     font-weight: 600;
     margin-bottom: var(--space-2);
+  }
+  .category-showcase-static-links {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-3) var(--space-4);
+    margin-top: var(--space-3);
+  }
+  .category-showcase-static-links a {
+    color: var(--color-text);
+    text-decoration: underline;
+    text-underline-offset: 4px;
   }
   .category-showcase-content,
   .category-showcase-dots {
