@@ -191,16 +191,27 @@
   // holding on the checkpoint frame once arrived — the same principle
   // the per-category videos in the previous version of this file used,
   // just spanning one combined shot instead of four separate ones.
+  // The last target a scroll asked for *while a transition was already
+  // playing* — not acted on immediately (see goToIndex below); picked up
+  // once the current transition actually finishes.
+  var pendingIndex = null;
+
   function goToIndex(index) {
     index = Math.max(0, Math.min(count - 1, index));
     targetIndex = index;
-    // Re-sync from wherever the video *actually* is right now, not just
-    // wherever the last-completed transition left off — a fast scroll can
-    // call goToIndex again while a previous transition is still mid-
-    // flight (activeMonitor still set), and currentTimeForward would
-    // otherwise still reflect the transition *before* that one.
+    // A transition already in flight is never interrupted or redirected
+    // — it always plays out to its own checkpoint and holds there, full
+    // stop; scrolling further while that's happening only ever queues
+    // the newest destination for afterward. Before this, a further-along
+    // scroll target would redirect the *in-progress* transition itself,
+    // which could carry it past a nearer checkpoint without ever
+    // actually stopping there — the video plays through the footage
+    // either way, but this guarantees every category still gets its own
+    // distinct hold, not just a blur it passed through on the way to a
+    // later one.
     if (activeMonitor !== null) {
-      currentTimeForward = activeDirection === 1 ? video.currentTime : toReverseTime(video.currentTime);
+      pendingIndex = index;
+      return;
     }
     var targetTimeForward = checkpoints[index];
     if (Math.abs(targetTimeForward - currentTimeForward) < 0.01) {
@@ -220,6 +231,16 @@
     monitorTowards(targetTimeInActiveFile, function () {
       currentTimeForward = targetTimeForward;
       setActive(index);
+      // Pick up whatever the scroll actually wanted most recently, now
+      // that this transition is genuinely done — not necessarily the
+      // same category the scroll was on when *this* transition started.
+      if (pendingIndex !== null && pendingIndex !== index) {
+        var next = pendingIndex;
+        pendingIndex = null;
+        goToIndex(next);
+      } else {
+        pendingIndex = null;
+      }
     });
     // Clearing this here, right before the intentional play() that's
     // about to start, is what makes it safe against the pause event's
