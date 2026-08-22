@@ -261,10 +261,34 @@
   // the only thing driven by scroll here is *which checkpoint index is
   // currently the target*, via plain rounding of scroll progress — the
   // video's own playback handles all the actual motion.
+  // 100vh of scroll per transition (the original figure) was calibrated
+  // against the *longest* segment (Будинки -> Інтер'єр, ~6s of footage).
+  // The two segments after it are much shorter (~2.8s, ~3s), but get the
+  // exact same 100vh — an ordinary scroll flick, especially trackpad
+  // momentum, that's perfectly reasonable for triggering one transition
+  // can easily cover more than 100vh in a single continuous motion, which
+  // means `rounded` can jump straight from 1 to 3 in one onUpdate tick:
+  // reported live as the video skipping over Ландшафт and landing on
+  // Комерція, never pausing on the one in between. 150vh per transition
+  // (vs. 100vh) makes that take a proportionally bigger, less casual
+  // scroll motion to happen, on every transition, not just the short
+  // ones specifically — there's no equivalent "how much scroll is one
+  // flick" number to key a per-transition value off instead.
+  var VH_PER_TRANSITION = 150;
   ScrollTrigger.create({
     trigger: section,
     start: 'top top',
-    end: '+=' + (count - 1) * 100 + '%',
+    // A function, not a '+=450%' string — that percentage form resolves
+    // against the *trigger element's own* height, not the viewport, and
+    // pinning changes what the trigger's height even is (ScrollTrigger
+    // inserts a spacer to reserve the scroll distance, so the trigger's
+    // height is itself downstream of this same `end` value). Measured
+    // this going wrong directly: asking for 450% here produced a pin
+    // distance around 50x the viewport height, not 4.5x. A function
+    // anchored explicitly to window.innerHeight has no such circularity,
+    // and ScrollTrigger already re-calls end() on refresh (e.g. resize)
+    // on its own.
+    end: function () { return '+=' + (count - 1) * VH_PER_TRANSITION / 100 * window.innerHeight; },
     pin: '.category-showcase-sticky',
     onUpdate: function (self) {
       var position = self.progress * (count - 1);
