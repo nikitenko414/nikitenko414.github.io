@@ -258,17 +258,57 @@
   }
   window.addEventListener('load', function () { ScrollTrigger.refresh(); });
 
+  function getTrigger() {
+    return ScrollTrigger.getAll().filter(function (st) { return st.vars.trigger === section; })[0];
+  }
+
+  function scrollToPosition(positionValue) {
+    var trigger = getTrigger();
+    if (!trigger) return;
+    var targetProgress = positionValue / (count - 1);
+    var targetY = trigger.start + targetProgress * (trigger.end - trigger.start);
+    window.scrollTo({ top: targetY, behavior: 'smooth' });
+  }
+
   // Dots jump straight to a category's ScrollTrigger position via the
   // browser's own smooth scrolling — no extra GSAP plugin needed for a
   // plain scroll-to-Y.
   dots.forEach(function (dot) {
     dot.addEventListener('click', function () {
-      var index = Number(dot.dataset.dot);
-      var trigger = ScrollTrigger.getAll().filter(function (st) { return st.vars.trigger === section; })[0];
-      if (!trigger) return;
-      var targetProgress = index / (count - 1);
-      var targetY = trigger.start + targetProgress * (trigger.end - trigger.start);
-      window.scrollTo({ top: targetY, behavior: 'smooth' });
+      scrollToPosition(Number(dot.dataset.dot));
     });
   });
+
+  // Settle-on-idle: GSAP's own built-in `snap` was tried for this and
+  // measured (see the onUpdate comment above) to reliably overshoot past
+  // the nearest category, so this is a plain, minimal alternative —
+  // native smooth scrollTo, exactly like the dots above, just triggered
+  // automatically once scrolling has been idle for a bit instead of on a
+  // click. This is deliberately NOT the hand-rolled settle-timer this
+  // project had much earlier (the one that caused freezing/fighting new
+  // input): that version used a *custom* animation loop to move scrollY,
+  // which is what fought a new scroll starting mid-settle. Here there is
+  // no custom animation loop at all — `scrollTo({behavior:'smooth'})` is
+  // the same native browser-driven smooth scroll the dots already use,
+  // and native smooth scrolling already correctly yields to new scroll
+  // input on its own, so a debounce timer here only needs to decide
+  // *when* to call it, never how to animate or how to cancel it.
+  var settleTimer = null;
+  function scheduleSettle() {
+    if (settleTimer) clearTimeout(settleTimer);
+    settleTimer = setTimeout(function () {
+      var trigger = getTrigger();
+      if (!trigger) return;
+      // Only settle while actually inside this section's pinned range —
+      // scrolling past it entirely (progress 0 or 1 already) needs no
+      // correction, and touching scrollY while the user is elsewhere on
+      // the page would be a real bug, not a fix.
+      if (trigger.progress <= 0 || trigger.progress >= 1) return;
+      var position = tl.time();
+      var nearest = Math.round(position);
+      if (Math.abs(position - nearest) < 0.02) return; // already close enough
+      scrollToPosition(nearest);
+    }, 150);
+  }
+  window.addEventListener('scroll', scheduleSettle, { passive: true });
 })();
