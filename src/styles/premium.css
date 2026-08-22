@@ -187,7 +187,12 @@ a {
   position: absolute;
   inset: 0;
   z-index: -1;
-  background: rgba(11, 10, 9, calc(var(--scroll-progress, 0) * 0.9));
+  /* A warm cast (the same brown as --color-accent) instead of flat
+     neutral black — echoes the warm interior-lighting tone the homepage
+     showcase video already has, rather than reading as a plain dark
+     scrim dropped on top of it. Still fades in with scroll-progress like
+     before, just tinted instead of neutral. */
+  background: linear-gradient(180deg, rgba(107, 74, 46, calc(var(--scroll-progress, 0) * 0.5)) 0%, rgba(11, 10, 9, calc(var(--scroll-progress, 0) * 0.9)) 100%);
   backdrop-filter: blur(calc(var(--scroll-progress, 0) * 12px));
   -webkit-backdrop-filter: blur(calc(var(--scroll-progress, 0) * 12px));
   mask-image: linear-gradient(to bottom, black 0%, black 40%, transparent 100%);
@@ -1640,6 +1645,16 @@ main.has-hero-page {
 }
 
 @media (max-width: 720px) {
+  /* The header is always position: fixed (see .site-header), so without
+     this the top of the pinned video sits directly *underneath* it —
+     reported directly: part of the video showing through/behind the
+     header bar. --header-height is set by header-scroll.js from the
+     header's own real rendered height, so this tracks it exactly rather
+     than guessing a fixed px figure that could drift out of sync with a
+     header that wraps to two lines on a narrow phone. */
+  .category-showcase {
+    margin-top: var(--header-height, 64px);
+  }
   .category-showcase-dots {
     right: var(--space-3);
     /* Sits over the media zone specifically now (see below) — half of
