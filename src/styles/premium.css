@@ -1642,21 +1642,43 @@ main.has-hero-page {
 @media (max-width: 720px) {
   .category-showcase-dots {
     right: var(--space-3);
+    /* Sits over the media zone specifically now (see below) — half of
+       its 55vh, not half of the whole sticky box. */
+    top: 27vh;
+    transform: none;
+  }
+  /* On a phone, overlaying the caption on the video (the desktop
+     treatment) was the reported problem: the same short vertical space
+     had to hold both a legible caption *and* a readable frame of the
+     video underneath it, and neither one had enough room to do its own
+     job well. Splitting them into two stacked zones — video on top,
+     caption in its own panel below — gives each the full width to
+     itself instead of fighting over the same pixels. The panel's
+     gradient starts from the same dark tone the video's own overlay
+     already fades to at its bottom edge (see .category-showcase-
+     media::after), so the seam between "photo" and "panel" reads as one
+     continuous surface, not a hard cut to a plain empty background. */
+  .category-showcase-sticky {
+    height: auto;
+    display: flex;
+    flex-direction: column;
+  }
+  .category-showcase-media {
+    position: relative;
+    inset: auto;
+    flex: 0 0 auto;
+    /* Same upscale-avoidance reasoning as the old 70vh figure — see git
+       history — just against a shorter box now that the caption has its
+       own space instead of sharing this one. */
+    height: 55vh;
   }
   .category-showcase-content {
-    padding-block: var(--space-4);
-  }
-  /* The source footage is landscape (1900x1070). Filling a full 100vh
-     portrait phone screen with object-fit: cover means scaling the video
-     up well past its native resolution — on a 375x812 CSS-px phone at
-     2x device pixel ratio that's roughly 1.5x upscale, visibly soft/
-     blurry (confirmed live: reported as "poor quality" on mobile,
-     measured videoHeight 1070 native vs. ~1624 physical px needed to
-     cover the full-height box). A shorter box needs less vertical
-     coverage, so cover has to stretch the footage less to fill it —
-     70vh keeps this close to native resolution instead of upscaling it. */
-  .category-showcase-sticky {
-    height: 70vh;
+    position: relative;
+    inset: auto;
+    flex: 1 1 auto;
+    justify-content: flex-start;
+    padding-block: var(--space-5) var(--space-6);
+    background: linear-gradient(180deg, var(--color-bg-alt) 0%, var(--color-bg) 100%);
   }
 }
 
