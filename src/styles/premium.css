@@ -1479,27 +1479,39 @@ main.has-hero-page {
   }
 }
 
-/* Category showcase (homepage, between hero and philosophy): four
-   photos that crossfade into one another as you scroll, Apple-product-
-   page style — not a hard slide-to-slide cut. .category-showcase is
-   4x viewport height (drives the scroll distance); .category-showcase-
-   sticky pins itself to the viewport for that whole distance while
-   category-showcase.js computes continuous scroll progress and sets
-   each layer's opacity directly (0..1, triangular — a layer is fully
-   visible exactly at its own scroll position and fades as you move past
-   it in either direction), so two images are genuinely blended together
-   mid-transition, not swapped. No CSS transition on opacity here for the
-   same reason the header fade has none — a value rewritten every scroll
-   frame shouldn't also be mid-transition, that reads as lag, not
-   smoothness. */
+/* Category showcase (homepage, between hero and philosophy): one photo/
+   video genuinely dissolving into the next as you scroll, Apple-product-
+   page style — the actual ask here, confirmed after a detour through a
+   native-scroll-snap-sections version that was more robust but didn't
+   look like this: it scrolled like separate stacked sections (each its
+   own sharpen-into-focus reveal), not like one continuous image flowing
+   into another. Getting the dissolve look back requires the layers to
+   occupy the exact same box at the same time (so two are genuinely
+   blended mid-transition, not just adjacent) — one pinned viewport with
+   all four layers absolutely stacked inside it, opacity driven from
+   scroll position.
+   Two hand-rolled versions of the scroll-driving JS were tried and
+   dropped: a wheel-intercepted/preventDefault stepper (fought scroll
+   physics, caused most of this section's worst bugs — see
+   category-showcase.js header for the full history), then a plain
+   `scroll` + requestAnimationFrame listener computing opacity from
+   getBoundingClientRect() by hand (logically correct, but nothing
+   governed how much scroll distance a transition spans, so a fast flick
+   could cross one in a handful of frames and read as an instant swap).
+   Both the pin and the scroll-to-progress math are now owned by GSAP's
+   ScrollTrigger (pin + scrub) instead — see category-showcase.js. The
+   pinning itself no longer happens via `position: sticky` here (Scroll-
+   Trigger applies its own positioning via inline styles once it pins
+   .category-showcase-sticky, using a spacer element rather than sticky's
+   containing-block-dependent behavior), and the total scroll distance is
+   set as a JS constant (`end` in the ScrollTrigger config), not this
+   section's own CSS height. */
 .category-showcase {
   position: relative;
-  height: 400vh;
 }
 
 .category-showcase-sticky {
-  position: sticky;
-  top: 0;
+  position: relative;
   height: 100vh;
   overflow: hidden;
 }
@@ -1521,13 +1533,22 @@ main.has-hero-page {
   z-index: 0;
 }
 
-.category-showcase-media img {
+.category-showcase-media img,
+.category-showcase-media video {
+  position: absolute;
+  inset: 0;
   width: 100%;
   height: 100%;
   object-fit: cover;
-  filter: grayscale(0.15) contrast(1.06) saturate(0.95);
 }
 
+/* Будинки/Ландшафт/Комерція are real <video> elements (see
+   category-showcase.js for why — a real video beats a re-encoded frame
+   sequence on every axis: smoothness, file size, no re-encoding
+   artifacts). No grayscale/contrast/saturate filter on this AI-generated
+   footage or its poster stills on purpose — that muting is calibrated for
+   the Pexels placeholder photos used elsewhere and reads as "mushy"/soft
+   on these frames even though they're sharp at full strength. */
 .category-showcase-layer::after {
   content: '';
   position: absolute;
@@ -1545,12 +1566,12 @@ main.has-hero-page {
 }
 
 /* Shared text block (one instance, not per-layer): content is swapped by
-   category-showcase.js only when the nearest whole slide index changes,
-   with its own quick .is-swapping fade — independent of and much faster
-   than the continuous photo crossfade, so it never overlaps itself.
-   Deliberately compact — this sits inside a hard 100vh box with no
-   scroll of its own, so it has to fit on short/laptop screens too, not
-   just tall desktop monitors. */
+   category-showcase.js only when the nearest whole category index
+   changes, with its own quick .is-swapping fade — independent of and
+   much faster than the continuous photo crossfade, so it never overlaps
+   itself. Deliberately compact — this sits inside a hard 100vh box with
+   no scroll of its own, so it has to fit on short/laptop screens too,
+   not just tall desktop monitors. */
 .category-showcase-content {
   position: absolute;
   inset: 0;
