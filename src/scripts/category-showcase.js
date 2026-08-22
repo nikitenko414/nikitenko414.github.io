@@ -121,6 +121,11 @@
   // gap without needing to touch how much footage exists between
   // checkpoints.
   var PLAYBACK_RATE = 2.2;
+  // Будинки <-> Інтер'єр (checkpoints[0] <-> checkpoints[1]) is the
+  // establishing shot — the exterior approach into the house — and reads
+  // better lingering a bit longer than the faster pace works fine for on
+  // the shorter segments after it.
+  var SLOW_PLAYBACK_RATE = 1.5;
 
   function toReverseTime(t) { return totalDuration - t; }
 
@@ -145,20 +150,37 @@
   // currentTime had already run to the very end of the file).
   var activeMonitor = null;
   function monitorTowards(targetTimeInActiveFile, onArrive) {
-    if (activeMonitor) video.removeEventListener('timeupdate', activeMonitor);
+    // requestAnimationFrame, not the 'timeupdate' event: timeupdate only
+    // fires a handful of times per second (browsers throttle it — real
+    // measurement earlier put it around 4/s), so however far the video
+    // plays *between* two consecutive timeupdate ticks is how far past
+    // the target it can already be before this ever notices. At native
+    // 1x speed that overshoot was small enough to land back on the same
+    // still-blended crossfade frame it was already showing, so snapping
+    // currentTime back read as nothing. At the faster transition speed
+    // (see PLAYBACK_RATE) that same tick gap covers more video-time, and
+    // the overshoot could land past the *next* crossfade entirely, onto
+    // genuinely different footage — confirmed live: scrolling into
+    // Інтер'єр, the video correctly ends up holding the interior frame,
+    // but the landscape frame it overshot onto flashes on screen for a
+    // moment first, before the snap-back. rAF runs on every rendered
+    // frame (so up to 60+ times/sec) regardless of playback rate, which
+    // keeps the maximum overshoot small enough that the snap-back happens
+    // before a wrong frame ever actually gets painted.
+    if (activeMonitor !== null) cancelAnimationFrame(activeMonitor);
     function check() {
       if (video.paused) return;
-      if (video.currentTime >= targetTimeInActiveFile - 0.04) {
+      if (video.currentTime >= targetTimeInActiveFile - 0.02) {
         restingAtCheckpoint = true;
         video.pause();
         video.currentTime = targetTimeInActiveFile;
-        video.removeEventListener('timeupdate', check);
         activeMonitor = null;
         onArrive();
+        return;
       }
+      activeMonitor = requestAnimationFrame(check);
     }
-    activeMonitor = check;
-    video.addEventListener('timeupdate', check);
+    activeMonitor = requestAnimationFrame(check);
   }
 
   // No scroll-scrubbing on purpose: seeking a <video> on every scroll
@@ -177,7 +199,7 @@
     // call goToIndex again while a previous transition is still mid-
     // flight (activeMonitor still set), and currentTimeForward would
     // otherwise still reflect the transition *before* that one.
-    if (activeMonitor) {
+    if (activeMonitor !== null) {
       currentTimeForward = activeDirection === 1 ? video.currentTime : toReverseTime(video.currentTime);
     }
     var targetTimeForward = checkpoints[index];
@@ -209,13 +231,27 @@
     // Set on every transition, not once at setup — assigning a new `src`
     // and calling load() (the branch just above, on a direction switch)
     // resets a video element's playbackRate back to 1 in some browsers.
-    video.playbackRate = PLAYBACK_RATE;
+    var isHousesInteriorLeg =
+      (index === 1 && Math.abs(currentTimeForward - checkpoints[0]) < 0.1) ||
+      (index === 0 && Math.abs(currentTimeForward - checkpoints[1]) < 0.1);
+    video.playbackRate = isHousesInteriorLeg ? SLOW_PLAYBACK_RATE : PLAYBACK_RATE;
     var playResult = video.play();
     if (playResult && playResult.catch) playResult.catch(function () {});
-    // Caption reflects the *destination* immediately, same as a video
-    // chapter title changing as soon as you jump to that chapter — it
-    // does not wait for the footage to finish arriving.
-    setActive(index);
+    // Deliberately NOT calling setActive(index) here. It used to update
+    // the caption to the destination immediately, before the footage
+    // arrived — reasonable in principle (like a chapter title changing
+    // the instant you jump to that chapter), but real scroll input isn't
+    // that clean: trackpad momentum can push the target one category
+    // further for a moment and then settle back, and each of those brief
+    // overshoots called goToIndex with its own index, which flashed the
+    // caption to a category the video was never actually going to stop
+    // on (reported live: scrolling Будинки -> Інтер'єр, the video correctly
+    // played to and held on the interior frame, but the caption flashed
+    // "Ландшафтний дизайн" for a moment first). Only the onArrive callback
+    // in monitorTowards calls setActive now, so the caption changes at the
+    // same moment the video actually stops — the two can no longer
+    // disagree, at the cost of the caption lagging slightly behind a
+    // scroll that's still actively moving, same as the video itself does.
   }
 
   // pin keeps the viewport locked on .category-showcase-sticky for the
