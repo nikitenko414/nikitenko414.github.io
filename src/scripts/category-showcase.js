@@ -194,7 +194,20 @@
       pin: '.category-showcase-sticky',
       scrub: 0.3,
       onUpdate: function (self) {
-        var position = self.progress * (count - 1);
+        // Deliberately NOT self.progress here. scrub adds smoothing lag
+        // between raw scroll position and how far the timeline (and the
+        // opacity tweens riding on it) has actually caught up — but
+        // self.progress reports the *raw*, un-lagged scroll position.
+        // On a fast real scroll (confirmed via a screen recording: the
+        // caption read "Ландшафтний дизайн"/"Комерційні приміщення" while
+        // the image on screen was still the commercial building on both),
+        // that mismatch is exactly what made the caption/video-focus logic
+        // run a beat ahead of whatever the crossfade was actually showing.
+        // tl.time() is the timeline's own current position — the same
+        // number the opacity tweens are rendering from — so reading
+        // position from it instead keeps text and video-triggering
+        // perfectly in step with what's visually on screen, lag and all.
+        var position = tl ? tl.time() : self.progress * (count - 1);
         var direction = self.direction; // 1 = scrolling down, -1 = scrolling up
         var opacityByIndex = [];
         layers.forEach(function (layer, i) {
