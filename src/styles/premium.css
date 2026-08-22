@@ -1628,6 +1628,18 @@ main.has-hero-page {
   .category-showcase-content {
     padding-block: var(--space-4);
   }
+  /* The source footage is landscape (1900x1070). Filling a full 100vh
+     portrait phone screen with object-fit: cover means scaling the video
+     up well past its native resolution — on a 375x812 CSS-px phone at
+     2x device pixel ratio that's roughly 1.5x upscale, visibly soft/
+     blurry (confirmed live: reported as "poor quality" on mobile,
+     measured videoHeight 1070 native vs. ~1624 physical px needed to
+     cover the full-height box). A shorter box needs less vertical
+     coverage, so cover has to stretch the footage less to fill it —
+     70vh keeps this close to native resolution instead of upscaling it. */
+  .category-showcase-sticky {
+    height: 70vh;
+  }
 }
 
 @media (max-height: 700px) {
