@@ -210,6 +210,24 @@
     if (i < count - 1) tl.to(layer, { opacity: 0, duration: 1, ease: 'none' }, i);
   });
 
+  // ScrollTrigger measures the pin start/end at setup time, based on
+  // whatever the page's layout height is *right then*. This section's own
+  // height never changes (it's driven by ScrollTrigger's `end` config, not
+  // document flow), but content further down the page does keep shifting
+  // as web fonts swap in (font-display) and lazy images/posters finish
+  // loading and take up their real box — each of those changes the
+  // document's total height *after* ScrollTrigger already measured it.
+  // ScrollTrigger doesn't know to recheck on its own for that (it reacts
+  // to window resize, not arbitrary later layout shifts elsewhere on the
+  // page), so a stale measurement is a real, separate way this could look
+  // broken beyond anything the crossfade math itself controls: refresh
+  // once more once fonts and the full page (images included) have
+  // actually finished loading.
+  if (document.fonts && document.fonts.ready) {
+    document.fonts.ready.then(function () { ScrollTrigger.refresh(); });
+  }
+  window.addEventListener('load', function () { ScrollTrigger.refresh(); });
+
   // Dots jump straight to a category's ScrollTrigger position via the
   // browser's own smooth scrolling — no extra GSAP plugin needed for a
   // plain scroll-to-Y.
