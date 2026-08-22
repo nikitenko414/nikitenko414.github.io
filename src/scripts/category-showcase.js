@@ -186,13 +186,17 @@
   gsap.set(layers[0], { opacity: 1 });
   for (var li = 1; li < count; li++) gsap.set(layers[li], { opacity: 0 });
 
+  // Tracks direction from the timeline's own time, not ScrollTrigger's
+  // self.direction — see the timeline onUpdate below for why.
+  var lastTlTime = 0;
+
   var tl = gsap.timeline({
     scrollTrigger: {
       trigger: section,
       start: 'top top',
       end: '+=' + (count - 1) * 100 + '%',
       pin: '.category-showcase-sticky',
-      scrub: 0.3,
+      scrub: 0.3
       // NOTE on "resting on a partial blend": wherever the user's scroll
       // physically stops is wherever the crossfade rests too — almost
       // never exactly on a category, so it can settle on a genuine
@@ -206,33 +210,34 @@
       // at the far end of the section instead, regardless of snapTo/
       // directional. That's a worse bug than the one it was meant to fix
       // (yanking the user two categories further than where they
-      // stopped), so it was pulled back out rather than shipped. The
-      // partial-blend-at-rest behavior is a known, real, currently
-      // unresolved rough edge — not silently ignored, just not yet worth
-      // the regression risk of the one fix tried for it so far.
-      onUpdate: function (self) {
-        // Deliberately NOT self.progress here. scrub adds smoothing lag
-        // between raw scroll position and how far the timeline (and the
-        // opacity tweens riding on it) has actually caught up — but
-        // self.progress reports the *raw*, un-lagged scroll position.
-        // On a fast real scroll (confirmed via a screen recording: the
-        // caption read "Ландшафтний дизайн"/"Комерційні приміщення" while
-        // the image on screen was still the commercial building on both),
-        // that mismatch is exactly what made the caption/video-focus logic
-        // run a beat ahead of whatever the crossfade was actually showing.
-        // tl.time() is the timeline's own current position — the same
-        // number the opacity tweens are rendering from — so reading
-        // position from it instead keeps text and video-triggering
-        // perfectly in step with what's visually on screen, lag and all.
-        var position = tl ? tl.time() : self.progress * (count - 1);
-        var direction = self.direction; // 1 = scrolling down, -1 = scrolling up
-        var opacityByIndex = [];
-        layers.forEach(function (layer, i) {
-          opacityByIndex[i] = gsap.getProperty(layer, 'opacity');
-        });
-        updateVideoPlayback(opacityByIndex, direction);
-        setActive(Math.round(position));
-      }
+      // stopped), so it was pulled back out rather than shipped, in
+      // favor of the plain debounced native-scrollTo settle further down
+      // this file.
+    },
+    // Deliberately a *timeline* onUpdate, not scrollTrigger.onUpdate.
+    // scrollTrigger.onUpdate only fires in response to an actual scroll/
+    // resize event — but scrub means the timeline keeps easing toward the
+    // target for up to 0.3s *after* scrolling has already stopped, and
+    // none of those catch-up frames are scroll events. Confirmed live:
+    // scrollTrigger.onUpdate's last call during a scroll used tl.time()
+    // ~2.11 correctly, then went silent while the scrub tween kept
+    // running and opacity kept visibly changing for another few hundred
+    // ms — leaving the caption/video-focus logic one full category
+    // stale (reading "Комерційні приміщення" while the image was still
+    // most of the way through "Ландшафтний дизайн"). A timeline-level
+    // onUpdate fires on every one of those render frames regardless of
+    // *why* the timeline moved, which is exactly what stays in step with
+    // whatever opacity is doing on screen.
+    onUpdate: function () {
+      var position = this.time();
+      var direction = position >= lastTlTime ? 1 : -1;
+      lastTlTime = position;
+      var opacityByIndex = [];
+      layers.forEach(function (layer, i) {
+        opacityByIndex[i] = gsap.getProperty(layer, 'opacity');
+      });
+      updateVideoPlayback(opacityByIndex, direction);
+      setActive(Math.round(position));
     }
   });
   layers.forEach(function (layer, i) {
