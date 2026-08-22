@@ -112,6 +112,16 @@
   // the event.
   var restingAtCheckpoint = false;
 
+  // A scroll gesture (and especially trackpad momentum) is over in well
+  // under a second, but the footage between two checkpoints can take
+  // several real seconds to play through at native speed — the mismatch
+  // between "I stopped scrolling" and "the video is still catching up"
+  // reads as the page hesitating or half-responding, not as a deliberate
+  // animation. Playing transitions faster than native speed shrinks that
+  // gap without needing to touch how much footage exists between
+  // checkpoints.
+  var PLAYBACK_RATE = 2.2;
+
   function toReverseTime(t) { return totalDuration - t; }
 
   // Self-heals a video that stops without this file asking it to (buffering
@@ -196,6 +206,10 @@
     // fire, this is already false, so that stale event no longer matters
     // either way once a new transition has genuinely started.
     restingAtCheckpoint = false;
+    // Set on every transition, not once at setup — assigning a new `src`
+    // and calling load() (the branch just above, on a direction switch)
+    // resets a video element's playbackRate back to 1 in some browsers.
+    video.playbackRate = PLAYBACK_RATE;
     var playResult = video.play();
     if (playResult && playResult.catch) playResult.catch(function () {});
     // Caption reflects the *destination* immediately, same as a video
