@@ -1653,7 +1653,7 @@ main.has-hero-page {
      than guessing a fixed px figure that could drift out of sync with a
      header that wraps to two lines on a narrow phone. */
   .category-showcase {
-    margin-top: var(--header-height, 64px);
+    margin-top: calc(var(--header-height, 64px) + var(--space-4));
   }
   .category-showcase-dots {
     right: var(--space-3);
