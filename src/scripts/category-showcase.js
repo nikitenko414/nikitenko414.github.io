@@ -193,6 +193,23 @@
       end: '+=' + (count - 1) * 100 + '%',
       pin: '.category-showcase-sticky',
       scrub: 0.3,
+      // NOTE on "resting on a partial blend": wherever the user's scroll
+      // physically stops is wherever the crossfade rests too — almost
+      // never exactly on a category, so it can settle on a genuine
+      // partial blend of two images (confirmed from a real screenshot:
+      // stopped scrolling, not mid-motion, and still showing two images
+      // overlapping). ScrollTrigger's built-in `snap` option (snapTo,
+      // directional: false) was tried here as the fix — but was measured,
+      // via a clean before/after trace (identical jump, snap config
+      // removed vs. present — see git history), to reliably drive the
+      // scroll position past the *nearest* category and only ever settle
+      // at the far end of the section instead, regardless of snapTo/
+      // directional. That's a worse bug than the one it was meant to fix
+      // (yanking the user two categories further than where they
+      // stopped), so it was pulled back out rather than shipped. The
+      // partial-blend-at-rest behavior is a known, real, currently
+      // unresolved rough edge — not silently ignored, just not yet worth
+      // the regression risk of the one fix tried for it so far.
       onUpdate: function (self) {
         // Deliberately NOT self.progress here. scrub adds smoothing lag
         // between raw scroll position and how far the timeline (and the
