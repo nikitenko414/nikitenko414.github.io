@@ -86,7 +86,7 @@
     // The <video> already has a <source src=forward> in the markup, so the
     // common case (scrolling down into a layer) needs no src swap or
     // reload — only touch src/.load() when reverse is actually needed, and
-        // again when coming back to forward after having used reverse.
+    // again when coming back to forward after having used reverse.
     var useReverse = direction < 0 && vl.reverseSrc;
     if (useReverse) {
       if (vl.video.getAttribute('src') !== vl.reverseSrc) {
@@ -163,47 +163,51 @@
     });
   }
 
-  // position runs 0..count-1 (0..3): fully on category i exactly at
-  // position === i, blending into its neighbor as position moves away —
-  // same triangular falloff for every layer, so every adjacent pair
-  // genuinely crossfades rather than one category getting special-cased.
-  function applyPosition(position, direction) {
-    var opacityByIndex = [];
-    layers.forEach(function (layer, i) {
-      var opacity = Math.max(0, 1 - Math.abs(position - i));
-      opacityByIndex[i] = opacity;
-      layer.style.opacity = String(opacity);
-      layer.style.visibility = opacity > 0.01 ? 'visible' : 'hidden';
-    });
-    updateVideoPlayback(opacityByIndex, direction);
-    setActive(Math.round(position));
-  }
-
   applyContent(0);
-  applyPosition(0, 1);
 
-  // pin: true keeps the viewport locked on .category-showcase-sticky for
-  // the section's full scroll distance, using a spacer element under the
-  // hood rather than plain CSS `position: sticky` (sticky has known
-  // cross-browser pinning/flicker edge cases with nested overflow —
-  // ScrollTrigger's own pin sidesteps them). scrub maps scroll position to
-  // timeline progress directly — no separate rAF/scroll-listener loop to
-  // hand-write, and no risk of the crossfade zone being too narrow for an
-  // ordinary scroll flick to resolve, since `end` below fixes exactly how
-  // much scroll distance the whole 0..3 range spans regardless of scroll
-  // speed. scrub: 0.3 (rather than `true`) adds a small smoothing lag so a
-  // fast flick still visibly dissolves instead of jumping frames.
-  ScrollTrigger.create({
-    trigger: section,
-    start: 'top top',
-    end: '+=' + (count - 1) * 100 + '%',
-    pin: '.category-showcase-sticky',
-    scrub: 0.3,
-    onUpdate: function (self) {
-      var position = self.progress * (count - 1);
-      var direction = self.direction; // 1 = scrolling down, -1 = scrolling up
-      applyPosition(position, direction);
+  // The crossfade itself is a real gsap.timeline(), not opacity computed
+  // by hand and poked into inline styles every onUpdate tick. Both report
+  // the same progress number, but only a real tween is guaranteed to be
+  // the thing actually driving paint: GSAP's own renderer owns these
+  // opacity values once they're tweens, batching and scheduling the writes
+  // itself, instead of this file re-deriving and re-assigning all 4 every
+  // single tick regardless of whether anything visibly needs to change.
+  // This is also the pattern GSAP's own crossfade examples use, not a
+  // detail specific to this project.
+  //
+  // Every layer gets the same triangular shape: fade in from 0->1 while
+  // position runs from (i-1) to i, fade out 1->0 while it runs from i to
+  // (i+1) — layer 0 has no fade-in leg (starts already at opacity 1) and
+  // the last layer has no fade-out leg, matching position's fixed 0..
+  // count-1 range. Position units double as the timeline's own time units
+  // (duration: 1 per leg) — with scrub attached, GSAP maps scroll progress
+  // onto timeline.time() directly, so "position" and "timeline time" are
+  // the same number.
+  gsap.set(layers[0], { opacity: 1 });
+  for (var li = 1; li < count; li++) gsap.set(layers[li], { opacity: 0 });
+
+  var tl = gsap.timeline({
+    scrollTrigger: {
+      trigger: section,
+      start: 'top top',
+      end: '+=' + (count - 1) * 100 + '%',
+      pin: '.category-showcase-sticky',
+      scrub: 0.3,
+      onUpdate: function (self) {
+        var position = self.progress * (count - 1);
+        var direction = self.direction; // 1 = scrolling down, -1 = scrolling up
+        var opacityByIndex = [];
+        layers.forEach(function (layer, i) {
+          opacityByIndex[i] = gsap.getProperty(layer, 'opacity');
+        });
+        updateVideoPlayback(opacityByIndex, direction);
+        setActive(Math.round(position));
+      }
     }
+  });
+  layers.forEach(function (layer, i) {
+    if (i > 0) tl.fromTo(layer, { opacity: 0 }, { opacity: 1, duration: 1, ease: 'none' }, i - 1);
+    if (i < count - 1) tl.to(layer, { opacity: 0, duration: 1, ease: 'none' }, i);
   });
 
   // Dots jump straight to a category's ScrollTrigger position via the
